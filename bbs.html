@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FREE JOEY — Dial the BBS</title>
+<meta name="description" content="Dial into the Free Joey BBS. One node, 28.8k, no ratio, strong opinions.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="progman window">
+  <div class="title-bar">
+    <span><span class="title-icon">&#128421;</span>Program Manager</span>
+    <div class="controls"><span>_</span><span>X</span></div>
+  </div>
+  <div class="window-body">
+    <div class="progman-icons">
+      <a href="index.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="4" y="1" width="1" height="14" fill="#000"/><polygon points="5,1 13,3 5,7" fill="#c00"/></svg>
+        <span>MANIFESTO</span>
+      </a>
+      <a href="evidence.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="2" y="1" width="12" height="14" fill="#fff" stroke="#000"/><rect x="4" y="3" width="8" height="1" fill="#000"/><rect x="4" y="5" width="8" height="1" fill="#000"/><rect x="4" y="7" width="5" height="1" fill="#000"/><rect x="4" y="10" width="8" height="1" fill="#c00"/></svg>
+        <span>EVIDENCE</span>
+      </a>
+      <a href="bbs.html" class="active">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="1" y="4" width="14" height="9" fill="#000" stroke="#000"/><rect x="2" y="5" width="12" height="6" fill="#0a0"/><rect x="3" y="6" width="4" height="1" fill="#000"/><rect x="3" y="8" width="7" height="1" fill="#000"/></svg>
+        <span>BBS</span>
+      </a>
+      <a href="merch.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="3" y="6" width="10" height="8" fill="#000080" stroke="#000"/><path d="M6 6 V4 a2 2 0 0 1 4 0 V6" fill="none" stroke="#000"/></svg>
+        <span>MERCH</span>
+      </a>
+      <a href="faq.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><circle cx="8" cy="8" r="6" fill="#fff" stroke="#000"/><text x="8" y="12" font-size="9" text-anchor="middle" font-family="monospace" fill="#000080">?</text></svg>
+        <span>FAQ</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="window">
+  <div class="title-bar">
+    <span><span class="title-icon">&#128222;</span>TERMINAL.EXE — 28800 8-N-1</span>
+    <div class="controls"><span>_</span><span>&#9634;</span><span>X</span></div>
+  </div>
+  <div class="menu-bar">
+    <span onclick="fileMenuExit()"><u>F</u>ile</span>
+    <span><u>E</u>dit</span>
+    <span><u>S</u>ettings</span>
+    <span><u>T</u>ransfers</span>
+    <span onclick="helpMenuAbout()"><u>H</u>elp</span>
+  </div>
+  <div class="window-body" style="padding:10px;">
+
+    <div class="btn-row" style="margin-top:0;">
+      <button id="dial-btn" class="btn31" type="button">&#128222; DIAL 555-1995</button>
+      <span style="font-size:11px;line-height:2.4;color:#333;">(makes modem noises &mdash; turn your volume down first)</span>
+    </div>
+
+    <div class="terminal" id="bbs-screen" aria-live="polite" role="log"></div>
+    <div id="bbs-inputline">
+      <label for="bbs-input">C:\FREEJOEY&gt; </label>
+      <input id="bbs-input" type="text" autocomplete="off" autocapitalize="off"
+             spellcheck="false" aria-label="BBS command input">
+    </div>
+
+    <p style="font-size:11px;color:#333;margin:12px 2px 0 2px;">
+      Nothing you type here is stored, logged, or sent anywhere &mdash; the
+      whole board runs in your browser tab. Try <code>HELP</code>,
+      <code>DIR</code>, <code>WHO</code>, or <code>TYPE JOEY.NFO</code>.
+      A few commands aren't in the help text.
+    </p>
+
+  </div>
+  <div class="status-bar">
+    <span>Connected. 28800 bps.</span>
+    <span>System time: <span id="sys-clock">--:--:--</span></span>
+  </div>
+</main>
+
+<p class="disclaimer">
+  FREE JOEY is an unofficial fan project and satire. Not affiliated with,
+  endorsed by, or sponsored by MGM, United Artists, or anyone who worked on
+  <em>Hackers</em> (1995). Joey Pardella is a fictional character.
+</p>
+
+<script src="script.js"></script>
+<script src="bbs.js"></script>
+</body>
+</html>

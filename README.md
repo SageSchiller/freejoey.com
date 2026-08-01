@@ -8,17 +8,44 @@ spirit of the real "Free Kevin" movement.
 
 A deliberately simple, dependency-free static site:
 
-- `index.html` (manifesto), `evidence.html` (case log), `merch.html`
-  (fake store + prank donate button), `faq.html`
-- `styles.css` — Windows 3.1 Program Manager chrome, no webfonts, no CDN
-- `script.js` — clock, cosmetic hit counter, the donate-button gag. No
-  network calls, nothing collected.
+- `index.html` (manifesto + petition), `evidence.html` (case log),
+  `bbs.html` (interactive terminal), `merch.html` (fake store + prank
+  donate button), `faq.html`
+- `styles.css` — Windows 3.1 Program Manager chrome, CRT overlay, taskbar.
+  No webfonts, no CDN.
+- `script.js` — shared chrome: boot sequence, draggable windows, taskbar +
+  Start menu, CRT toggle, starfield screen saver, petition, donate gag
+- `bbs.js` — the BBS command interpreter and Web Audio modem handshake
 - `404.html`, `favicon.svg`
 - `wrangler.jsonc` — Cloudflare Workers static-assets config, no build step
 
 No framework, npm, backend, analytics, third-party scripts, or tracking.
-The "donate" button on the merch page is pure client-side theater; it never
-submits a form or contacts a server.
+
+## Interactive bits
+
+- **Boot sequence** — fake BIOS POST on the homepage, once per session
+  (`sessionStorage`), skippable with any key or click
+- **Draggable windows** — grab any title bar on a pointer device. Minimize
+  rolls a window up; the X button is a joke. Start → "Reset window layout"
+  puts everything back.
+- **CRT filter** — scanlines, vignette, and flicker. Toggle in the taskbar
+  or Start menu; preference persists. Respects `prefers-reduced-motion`.
+- **Screen saver** — starfield after 90 seconds idle, click to dismiss
+- **BBS terminal** (`bbs.html`) — a real command parser with command
+  history. Try `HELP`, `DIR`, `TYPE JOEY.NFO`, `WHO`, `TRACE`, `MITNICK`.
+  Undocumented: `FREE JOEY`, `HACK THE PLANET`, `GIBSON`, `ROOT`, `COOKIE`.
+- **Modem dial-in** — the DIAL button synthesizes dial tone, DTMF digits,
+  ring, and handshake screech with the Web Audio API. User-triggered only,
+  never autoplayed.
+
+## Privacy
+
+Nothing on this site collects, stores, or transmits user data. There is no
+backend, no form that POSTs anywhere, and no cookies at all. `localStorage`
+is used for exactly three cosmetic things, all of which stay on the device:
+the fake visitor counter, the CRT on/off preference, and petition handles.
+The "donate" button and the store's "add to cart" buttons are pure theater
+and never touch the network.
 
 ## Content notes
 
