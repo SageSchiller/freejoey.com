@@ -47,10 +47,10 @@
     <div class="controls"><span>_</span><span>▢</span><span>X</span></div>
   </div>
   <div class="menu-bar">
-    <span onclick="fileMenuExit()"><u>F</u>ile</span>
-    <span><u>C</u>art (0)</span>
-    <span><u>O</u>ptions</span>
-    <span onclick="helpMenuAbout()"><u>H</u>elp</span>
+    <span data-menu="file"><u>F</u>ile</span>
+    <span data-menu="cart"><u>C</u>art (<span id="cart-count">0</span>)</span>
+    <span data-menu="options"><u>O</u>ptions</span>
+    <span data-menu="help"><u>H</u>elp</span>
   </div>
   <div class="window-body">
 
@@ -62,22 +62,38 @@
       <tr>
         <td>"HACK THE PLANET" tee, unlicensed</td>
         <td>$19.95</td>
-        <td><button class="btn31" type="button" onclick="alert('This store is not real. Nothing will be shipped. Not even disappointment.')">ADD TO CART</button></td>
+        <td><button class="btn31" type="button" data-id="tee"
+            data-name='"HACK THE PLANET" tee' data-price="19.95">ADD TO CART</button></td>
       </tr>
       <tr>
         <td>FREE JOEY enamel pin</td>
         <td>$4.99</td>
-        <td><button class="btn31" type="button" onclick="alert('This store is not real. Nothing will be shipped. Not even disappointment.')">ADD TO CART</button></td>
+        <td><button class="btn31" type="button" data-id="pin"
+            data-name="FREE JOEY enamel pin" data-price="4.99">ADD TO CART</button></td>
       </tr>
       <tr>
         <td>3.5&Prime; floppy disk sticker pack (10ct)</td>
         <td>$6.66</td>
-        <td><button class="btn31" type="button" onclick="alert('This store is not real. Nothing will be shipped. Not even disappointment.')">ADD TO CART</button></td>
+        <td><button class="btn31" type="button" data-id="stickers"
+            data-name="Floppy disk sticker pack" data-price="6.66">ADD TO CART</button></td>
       </tr>
       <tr>
         <td>"I Helped Bail Out Joey" bumper sticker (you did not)</td>
         <td>$2.50</td>
-        <td><button class="btn31" type="button" onclick="alert('This store is not real. Nothing will be shipped. Not even disappointment.')">ADD TO CART</button></td>
+        <td><button class="btn31" type="button" data-id="bumper"
+            data-name='"I Helped Bail Out Joey" sticker' data-price="2.50">ADD TO CART</button></td>
+      </tr>
+      <tr>
+        <td>Acoustic coupler, refurbished, unreliable</td>
+        <td>$74.00</td>
+        <td><button class="btn31" type="button" data-id="coupler"
+            data-name="Acoustic coupler (refurb)" data-price="74.00">ADD TO CART</button></td>
+      </tr>
+      <tr>
+        <td>Legal defense fund tote bag (fund not included)</td>
+        <td>$12.00</td>
+        <td><button class="btn31" type="button" data-id="tote"
+            data-name="Legal defense fund tote" data-price="12.00">ADD TO CART</button></td>
       </tr>
     </table>
 
@@ -99,6 +115,33 @@
     <span>System time: <span id="sys-clock">--:--:--</span></span>
   </div>
 </main>
+
+<section class="window" id="cart-window">
+  <div class="title-bar">
+    <span><span class="title-icon">&#128722;</span>SHOPPING CART</span>
+    <div class="controls"><span>_</span><span>&#9634;</span><span>X</span></div>
+  </div>
+  <div class="menu-bar">
+    <span data-menu="cart"><u>C</u>art</span>
+    <span data-menu="help"><u>H</u>elp</span>
+  </div>
+  <div class="window-body">
+    <div id="cart-body"></div>
+    <div class="totals" id="cart-totals"></div>
+
+    <div class="btn-row">
+      <button id="checkout-btn" class="btn31 big" type="button">PROCEED TO CHECKOUT</button>
+      <button id="empty-btn" class="btn31" type="button">EMPTY CART</button>
+    </div>
+
+    <div class="terminal" id="checkout-log" aria-live="polite"
+         style="max-height:280px;overflow-y:auto;"></div>
+  </div>
+  <div class="status-bar">
+    <span>Orders placed to date: 0.</span>
+    <span>Orders fulfilled: also 0.</span>
+  </div>
+</section>
 
 <p class="disclaimer">
   Unofficial fan project and satire. Not affiliated with MGM, United Artists,

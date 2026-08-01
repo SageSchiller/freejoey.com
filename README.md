@@ -30,9 +30,24 @@ No framework, npm, backend, analytics, third-party scripts, or tracking.
 - **CRT filter**: scanlines, vignette, and flicker. Toggle in the taskbar
   or Start menu; preference persists. Respects `prefers-reduced-motion`.
 - **Screen saver**: starfield after 90 seconds idle, click to dismiss
+- **Pull-down menus**: the menu bars are real Windows 3.1 style menus.
+  Click to open, hover to slide between them, Escape or an outside click
+  closes. Definitions live in `MENU_DEFS` in `script.js`, keyed by the
+  `data-menu` attribute on each `.menu-bar > span`. Most items are jokes;
+  Open Case File, Refresh, and Select All actually do the thing.
+- **Working cart** (`merch.html`): add and remove items, live quantity
+  badge in the menu bar, running subtotal with 8.25% tax, persisted in
+  `localStorage`. Checkout runs a dial-up order sequence that fails on the
+  grounds that no payment processor exists and neither does the store. The
+  cart survives checkout on purpose. Stacking the same item to 5, 13, or
+  31 gets you something.
 - **BBS terminal** (`bbs.html`): a real command parser with command
   history. Try `HELP`, `DIR`, `TYPE JOEY.NFO`, `WHO`, `TRACE`.
-  Undocumented: `FREE JOEY`, `HACK THE PLANET`, `GIBSON`, `ROOT`, `COOKIE`.
+  Undocumented so far: `FREE JOEY`, `HACK THE PLANET`, `GIBSON`, `ROOT`,
+  `SUDO`, `COOKIE`, `POOL`, `GARBAGE`, `RABBIT`, `PLAGUE`, `WHOAMI`,
+  `PWD`, `CD`, `LS`, `UPTIME`, `PING`, `NETSTAT`, `FORTUNE`, `COFFEE`,
+  `PIZZA`, `MOM`, `VIRUS`, `MATRIX`, `LEET`, `NUKE`, `SPOON`. Keep new
+  ones out of the `HELP` list; finding them is the point.
 - **Modem dial-in**: the DIAL button synthesizes dial tone, DTMF digits,
   ring, and handshake screech with the Web Audio API. User-triggered only,
   never autoplayed.
@@ -54,10 +69,20 @@ strangers type onto this domain, and personal-data handling once people
 enter real names. Not worth it for a placeholder. If that ever changes,
 the shape is KV + Turnstile + a strict charset allowlist + a delete path.
 
-Signatures are rendered with `createElement` + `textContent`, never
-`innerHTML`. Keep it that way. In `bbs.js`, terminal output goes through
-`insertAdjacentHTML` with the manual `esc()` helper, so any new text there
-must be passed through `esc()` too.
+Signatures and cart line items are rendered with `createElement` +
+`textContent`, never `innerHTML`. Keep it that way. In `bbs.js`, terminal
+output goes through `insertAdjacentHTML` with the manual `esc()` helper, so
+any new text there must be passed through `esc()` too.
+
+The cart lives in `localStorage` under `fj_cart` and is validated on read:
+unknown item ids are dropped and quantities are clamped, so a hand-edited
+value cannot inject anything or break the totals.
+
+## Layout gotcha
+
+`<marquee>` is `inline-block` by default, so `margin: 0 auto` does not
+centre it. The news ticker on `evidence.html` needs `display: block` to
+line up with the windows, which is what the `.ticker` class handles.
 
 ## Content notes
 

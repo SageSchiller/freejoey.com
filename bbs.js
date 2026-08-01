@@ -50,6 +50,30 @@ const FILES = {
     "4. Joey did nothing wrong. This is not up for debate on this board.",
     "5. Rule 4 is, in fact, slightly up for debate. See MANIFESTO.",
   ],
+  "GIBSON.NFO": [
+    "TARGET    : Ellingson Mineral Company",
+    "SYSTEM    : Gibson supercomputer",
+    "ACCESS    : had it, briefly, by accident",
+    "OUTCOME   : still standing",
+    "",
+    "Beautiful machine. Genuinely. You should see the way the",
+    "filesystem renders. Nobody talks about that part because",
+    "everyone is too busy talking about the part where a kid",
+    "downloaded a junk file off it and lost his whole life for",
+    "eighteen days.",
+  ],
+  "LEGAL.TXT": [
+    "LEGAL DEFENSE FUND",
+    "==================",
+    "",
+    "Balance         : $0.00",
+    "Contributions   : 0",
+    "Administered by : nobody",
+    "Bank            : none identified",
+    "",
+    "The fund was announced before it was opened, which is the",
+    "order in which most things happened around here.",
+  ],
   "PHRACK.TXT": [
     "                    == THE CONSCIENCE OF A NOOB ==",
     "",
@@ -241,9 +265,266 @@ const COMMANDS = {
 
   ROOT() { writeLines(["Permission denied. You are not, and have never been, root."], "warn"); },
   SU() { COMMANDS.ROOT(); },
-  GIBSON() { writeLines(["", "The Gibson is fine. Leave the Gibson alone.", ""], "amber"); },
-  COOKIE() { writeLines(["", "There is no cookie. This site sets no cookies at all.", ""]); },
+
+  SUDO(arg) {
+    if (!arg) { writeLines(["usage: sudo <command>"], "warn"); return; }
+    writeLines([
+      "",
+      "guest is not in the sudoers file.",
+      "This incident has been reported to nobody, because nobody",
+      "is running this board anymore.",
+      "",
+    ], "warn");
+  },
+
+  GIBSON() { COMMANDS.TYPE("GIBSON.NFO"); },
+
+  COOKIE() {
+    writeLines([
+      "",
+      "There is no cookie. This site sets no cookies at all.",
+      "The one time somebody around here went looking for a cookie",
+      "it cost us fifty points and most of our dignity.",
+      "",
+    ]);
+  },
+
+  POOL() {
+    writeLines([
+      "",
+      "  The pool on the roof must have a leak.",
+      "",
+    ], "amber");
+    writeLines(["If you know, you know. If you do not, ask around.", ""], "dim");
+  },
+
+  GARBAGE() {
+    writeLines([
+      "",
+      "THE GARBAGE FILE",
+      "================",
+      "",
+      "Unmonitored. Unremarkable. Sitting on a system nobody",
+      "was watching, holding the only proof that the people",
+      "watching were the ones stealing.",
+      "",
+      "One kid opened it. One kid went away for it.",
+      "",
+    ], "amber");
+  },
+
+  RABBIT() {
+    writeLines([
+      "",
+      "Searching for the rabbit...",
+      "",
+      "The rabbit is not on this board. The rabbit was never",
+      "on this board. Stop asking this board about the rabbit.",
+      "",
+    ], "warn");
+  },
+
+  PLAGUE() {
+    writeLines([
+      "",
+      "Record sealed at the request of a corporate security officer",
+      "who assures us he is on our side.",
+      "",
+      "We have some notes on that.",
+      "",
+    ], "warn");
+  },
+
+  WHOAMI() {
+    writeLines([
+      "",
+      "guest",
+      "",
+      "No handle on file. Do not feel bad about it. Neither did he,",
+      "and look how invested we all got.",
+      "",
+    ]);
+  },
+
+  PWD() { writeLines(["", "C:\\FREEJOEY", ""]); },
+  LS(arg) { COMMANDS.DIR(arg); },
+
+  CD() {
+    writeLines([
+      "",
+      "There is nowhere else to go. This is one node. This is the",
+      "whole board. This is it.",
+      "",
+    ], "dim");
+  },
+
+  UPTIME() {
+    writeLines([
+      "",
+      " 02:14a  up 11314 days,  3 users,  load average: 0.02, 0.01, 0.00",
+      "",
+      "Nobody has rebooted this since 1995. Nobody dares.",
+      "",
+    ]);
+  },
+
+  PING(arg) {
+    const host = (arg || "GIBSON").toUpperCase();
+    writeLines(["", `PING ${host}: 56 data bytes`, ""]);
+    let i = 0;
+    const step = () => {
+      if (i >= 4) {
+        writeLines([
+          "",
+          `--- ${host} ping statistics ---`,
+          "4 packets transmitted, 4 received, 0% packet loss",
+          "It is up. It is fine. It has always been fine.",
+          "",
+        ], "dim");
+        return;
+      }
+      const ms = (28 + Math.random() * 40).toFixed(1);
+      write(esc(`64 bytes from ${host}: icmp_seq=${i} ttl=51 time=${ms} ms`));
+      i++;
+      setTimeout(step, 420);
+    };
+    step();
+  },
+
+  NETSTAT() {
+    writeLines([
+      "",
+      "Active Connections",
+      "",
+      "  Proto  Local Address      Foreign Address     State",
+      "  TCP    FREEJOEY:23        YOU                 ESTABLISHED",
+      "  TCP    FREEJOEY:23        [REDACTED]          ESTABLISHED",
+      "  TCP    FREEJOEY:23        ELLINGSON.COM       TIME_WAIT",
+      "  TCP    FREEJOEY:1337      0.0.0.0             LISTENING",
+      "",
+      "That second one has been connected for thirty-one years",
+      "and has never typed anything. We have stopped asking.",
+      "",
+    ]);
+  },
+
+  FORTUNE() {
+    const picks = [
+      "Mess with the best, die like the rest.",
+      "There is no right and wrong. There's only fun and boring.",
+      "Never send a boy to do a woman's job.",
+      "The flag was in the page source. It is always in the page source.",
+      "Any sufficiently advanced incompetence is indistinguishable from a raid.",
+      "Read the man page. You will not, but you should.",
+      "Somebody is always watching the port you forgot about.",
+      "Back up the disk. Hide the disk. Especially hide the disk.",
+    ];
+    writeLines(["", "  " + picks[Math.floor(Math.random() * picks.length)], ""], "amber");
+  },
+
+  COFFEE() {
+    writeLines([
+      "",
+      "HTCPCP/1.0 418 I'm a teapot",
+      "",
+      "This board cannot brew coffee. This board can barely hold",
+      "a carrier signal.",
+      "",
+    ], "warn");
+  },
+
+  PIZZA() {
+    writeLines(["", "Dialing the pizza place...", ""]);
+    setTimeout(() => {
+      writeLines([
+        "ORDER CONFIRMED.",
+        "",
+        "One large, delivered to a residence currently containing",
+        "zero teenagers and four federal agents. Someone will sign",
+        "for it. Nobody will enjoy it.",
+        "",
+      ], "amber");
+    }, 900);
+  },
+
+  MOM() {
+    writeLines([
+      "",
+      "Your mother called. She needs the phone line.",
+      "",
+      "She has needed the phone line this entire time. Every single",
+      "one of us has had this exact conversation.",
+      "",
+    ], "amber");
+  },
+
+  VIRUS() {
+    writeLines(["", "Scanning...", ""]);
+    let i = 0;
+    const rows = [
+      "  C:\\FREEJOEY\\README.TXT ......... clean",
+      "  C:\\FREEJOEY\\JOEY.NFO ........... clean",
+      "  C:\\FREEJOEY\\RULES.TXT .......... clean",
+      "  C:\\FREEJOEY\\LEGAL.TXT .......... empty",
+      "  C:\\FREEJOEY\\GARBAGE ............ <span class=\"warn\">DO NOT OPEN</span>",
+    ];
+    const step = () => {
+      if (i >= rows.length) {
+        writeLines(["", "Scan complete. 1 item flagged. We are not opening it again.", ""], "dim");
+        return;
+      }
+      write(rows[i]);
+      i++;
+      setTimeout(step, 320);
+    };
+    step();
+  },
+
+  MATRIX() {
+    writeLines(["", "Wrong movie. Off by four years. But fine.", ""], "dim");
+    const glyphs = "01" + "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ";
+    let n = 0;
+    const step = () => {
+      if (n >= 12) {
+        writeLines(["", "There is no spoon. There is a floppy disk. Focus.", ""], "amber");
+        return;
+      }
+      let row = "";
+      for (let i = 0; i < 46; i++) {
+        row += Math.random() < 0.25 ? " " : glyphs[Math.floor(Math.random() * glyphs.length)];
+      }
+      write('<span class="dim">' + esc(row) + "</span>");
+      n++;
+      setTimeout(step, 90);
+    };
+    step();
+  },
+
+  LEET() {
+    writeLines(["", "1337", "", "Yes. Very good. Everyone is impressed.", ""], "amber");
+  },
+
+  NUKE() {
+    writeLines([
+      "",
+      "No.",
+      "",
+      "This board is a joke about a movie. Go outside.",
+      "",
+    ], "warn");
+  },
+
+  SPOON() { writeLines(["", "There is no spoon.", "There is, however, a garbage file.", ""], "amber"); },
 };
+
+// Aliases that read better as typed phrases than as single tokens.
+COMMANDS["1337"] = COMMANDS.LEET;
+COMMANDS.ELITE = COMMANDS.LEET;
+COMMANDS["?"] = COMMANDS.HELP;
+COMMANDS.MAN = COMMANDS.HELP;
+COMMANDS.ZEROCOOL = COMMANDS.GIBSON;
+COMMANDS.CRASH = COMMANDS.GIBSON;
+COMMANDS.HACKTHEPLANET = function () { COMMANDS.HACK("PLANET"); };
 
 function runCommand(raw) {
   const line = raw.trim();

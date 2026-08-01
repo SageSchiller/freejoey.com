@@ -585,10 +585,158 @@ table.store tr:nth-child(even) td { background: #e8e8e8; }
 #saver.on { display: block; }
 #saver canvas { display: block; width: 100%; height: 100%; }
 
+/* ---------- news ticker ---------- */
+
+/* <marquee> defaults to inline-block, so margin:auto will not centre it.
+   It needs to be a block to line up with the windows above and below. */
+.ticker {
+  display: block;
+  max-width: 760px;
+  margin: 0 auto 16px auto;
+  background: #000080;
+  color: #fff;
+  padding: 5px 0;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  border: 2px solid #dfdfdf;
+  border-right-color: #000;
+  border-bottom-color: #000;
+}
+
+/* ---------- pull-down menus ---------- */
+
+.menu-bar { position: relative; }
+.menu-bar > span { position: relative; }
+.menu-bar > span.open { background: #000080; color: #fff; }
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: -4px;
+  min-width: 208px;
+  background: #c0c0c0;
+  border: 2px solid #dfdfdf;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #fff,
+    3px 3px 7px rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  padding: 3px;
+  display: none;
+  cursor: default;
+}
+
+.dropdown.open { display: block; }
+
+.dropdown button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 4px 9px;
+  cursor: pointer;
+  color: #000;
+  white-space: nowrap;
+}
+
+.dropdown button:hover:not(:disabled) { background: #000080; color: #fff; }
+
+.dropdown button:disabled {
+  color: #808080;
+  text-shadow: 1px 1px 0 #fff;
+  cursor: default;
+}
+
+.dropdown button .key { font-size: 11px; opacity: 0.75; }
+
+.dropdown hr {
+  border: none;
+  border-top: 1px solid #808080;
+  border-bottom: 1px solid #fff;
+  margin: 3px 2px;
+}
+
+/* ---------- shopping cart ---------- */
+
+#cart-window { display: none; }
+#cart-window.show { display: block; }
+
+table.cart {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+
+table.cart th, table.cart td {
+  border: 1px solid #808080;
+  padding: 5px 8px;
+  font-size: 12px;
+  text-align: left;
+}
+
+table.cart th { background: #000080; color: #fff; }
+table.cart td.num { text-align: right; font-family: "Courier New", monospace; }
+table.cart tr:nth-child(even) td { background: #e8e8e8; }
+
+table.cart button {
+  font-family: inherit;
+  font-size: 11px;
+  background: #c0c0c0;
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  padding: 1px 7px;
+  cursor: pointer;
+}
+
+table.cart button:active {
+  border-color: #000;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+}
+
+.totals {
+  margin-left: auto;
+  width: 100%;
+  max-width: 320px;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+}
+
+.totals div {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.totals div.grand {
+  border-top: 1px solid #808080;
+  margin-top: 5px;
+  padding-top: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.cart-empty {
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  color: #444;
+  padding: 10px 0;
+}
+
 @media (max-width: 600px) {
   .progman-icons a { width: 64px; }
   body { padding: 8px 8px 48px 8px; }
   #bbs-screen { height: 300px; }
+  .dropdown { min-width: 176px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

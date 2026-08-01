@@ -444,6 +444,439 @@ function runDonatePrank() {
   step();
 }
 
+/* ---------------- pull-down menus ---------------- */
+// The menu bar used to highlight on hover and do nothing. These are real
+// Windows 3.1 style pull-downs: click to open, hover to slide between open
+// menus, click anywhere else or press Escape to close.
+
+function say(msg) { alert(msg); }
+
+const MENU_DEFS = {
+  file: [
+    { label: "New Campaign", key: "Ctrl+N", disabled: true },
+    { label: "Open Case File...", key: "Ctrl+O",
+      action: () => { location.href = "evidence.html"; } },
+    { label: "Save", key: "Ctrl+S",
+      action: () => say("Saved.\n\n(Nothing was saved. There is nothing to save.)") },
+    { label: "Print...", key: "Ctrl+P",
+      action: () => say("No printer detected.\n\nTry the one in the computer lab. It is out of toner. It has been out of toner since 1994.") },
+    { sep: true },
+    { label: "Exit", key: "Alt+F4", action: fileMenuExit },
+  ],
+
+  edit: [
+    { label: "Undo", key: "Ctrl+Z",
+      action: () => say("You cannot undo this.\n\nNot the download, not the raid, not any of it.") },
+    { label: "Redo", key: "Ctrl+Y", disabled: true },
+    { sep: true },
+    { label: "Cut", key: "Ctrl+X", disabled: true },
+    { label: "Copy", key: "Ctrl+C", disabled: true },
+    { label: "Paste", key: "Ctrl+V",
+      action: () => say("Nothing on the clipboard.\n\nWhatever you think is on there, it is not, and we were never told about it.") },
+    { sep: true },
+    { label: "Select All", key: "Ctrl+A", action: () => {
+        const main = document.querySelector("main");
+        if (!main) return;
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        const r = document.createRange();
+        r.selectNodeContents(main);
+        sel.addRange(r);
+      } },
+  ],
+
+  search: [
+    { label: "Find...", key: "F3",
+      action: () => say("Find what?\n\nHe is in custody. That is the whole search result.") },
+    { label: "Find Next", key: "F4", disabled: true },
+  ],
+
+  view: [
+    { label: "Toolbar", key: "✓", disabled: true },
+    { label: "Status Bar", key: "✓", disabled: true },
+    { sep: true },
+    { label: "Zoom", action: () => say("Zoom is a 2020 problem.\n\nThis is 1995. Sit closer to the monitor.") },
+    { label: "Refresh", key: "F5", action: () => location.reload() },
+  ],
+
+  settings: [
+    { label: "Terminal Emulation: ANSI-BBS", disabled: true },
+    { label: "Baud Rate: 28800",
+      action: () => say("28800 is as fast as this gets.\n\nJoey had to beg for this. Show some respect.") },
+    { label: "Local Echo: ON", disabled: true },
+    { sep: true },
+    { label: "Capture to Disk...",
+      action: () => say("Capture disabled.\n\nThe last person who saved a session to disk is currently in federal custody.") },
+  ],
+
+  transfers: [
+    { label: "Download (ZMODEM)",
+      action: () => say("ZMODEM receive initiated...\n\nCONNECTION LOST.\n\nProbably for the best.") },
+    { label: "Upload (ZMODEM)",
+      action: () => say("Do not upload anything to this board.\n\nThat is, verbatim, how this entire situation started.") },
+    { sep: true },
+    { label: "Transfer Log", disabled: true },
+  ],
+
+  options: [
+    { label: "Currency: 1995 USD", disabled: true },
+    { label: "Gift Wrap",
+      action: () => say("Gift wrap applied to 0 items.\n\nThe wrapping is also fictional. It is fictional wrapping around fictional merchandise.") },
+    { sep: true },
+    { label: "Restock Inventory",
+      action: () => say("Restocking...\n\n0 items restocked.\n0 items were ever stocked.\nRestock complete.") },
+  ],
+
+  cart: [
+    { label: "View Cart", action: () => { showCart(true); } },
+    { label: "Empty Cart", action: () => { emptyCart(); } },
+    { sep: true },
+    { label: "Checkout", action: () => { showCart(true); runCheckout(); } },
+  ],
+
+  help: [
+    { label: "Contents", key: "F1",
+      action: () => say("FREE JOEY HELP\n\n- The EVIDENCE page has the case log.\n- The BBS takes typed commands. Try HELP once you are in.\n- The MERCH page takes no money whatsoever.\n\nThat is the whole system.") },
+    { label: "Search for Help On...",
+      action: () => say('Search for help on: "how to get a lawyer"\n\n0 topics found.') },
+    { sep: true },
+    { label: "About FREE JOEY", action: helpMenuAbout },
+  ],
+};
+
+function closeMenus() {
+  document.querySelectorAll(".menu-bar > span.open").forEach((s) => s.classList.remove("open"));
+  document.querySelectorAll(".dropdown.open").forEach((d) => d.classList.remove("open"));
+}
+
+function buildDropdown(name) {
+  const def = MENU_DEFS[name];
+  const dd = document.createElement("div");
+  dd.className = "dropdown";
+  if (!def) return dd;
+  def.forEach((item) => {
+    if (item.sep) {
+      dd.appendChild(document.createElement("hr"));
+      return;
+    }
+    const b = document.createElement("button");
+    b.type = "button";
+    const l = document.createElement("span");
+    l.textContent = item.label;
+    b.appendChild(l);
+    if (item.key) {
+      const k = document.createElement("span");
+      k.className = "key";
+      k.textContent = item.key;
+      b.appendChild(k);
+    }
+    if (item.disabled) {
+      b.disabled = true;
+    } else {
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeMenus();
+        if (item.action) item.action();
+      });
+    }
+    dd.appendChild(b);
+  });
+  return dd;
+}
+
+function initMenus() {
+  const labels = document.querySelectorAll(".menu-bar > span[data-menu]");
+  labels.forEach((span) => {
+    const dd = buildDropdown(span.dataset.menu);
+    span.appendChild(dd);
+
+    span.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const wasOpen = span.classList.contains("open");
+      closeMenus();
+      if (!wasOpen) {
+        span.classList.add("open");
+        dd.classList.add("open");
+      }
+    });
+
+    // Once one menu is open, sliding across the bar opens the others.
+    span.addEventListener("mouseenter", () => {
+      const anyOpen = document.querySelector(".menu-bar > span.open");
+      if (!anyOpen || anyOpen === span) return;
+      closeMenus();
+      span.classList.add("open");
+      dd.classList.add("open");
+    });
+  });
+
+  document.addEventListener("click", closeMenus);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenus(); });
+}
+
+/* ---------------- shopping cart (merch page) ---------------- */
+// Nothing here touches the network. The cart is real bookkeeping wrapped
+// around merchandise that does not exist, which is the joke.
+
+const CATALOG = {};
+
+function loadCart() {
+  try {
+    const raw = localStorage.getItem("fj_cart");
+    const obj = raw ? JSON.parse(raw) : {};
+    if (!obj || typeof obj !== "object" || Array.isArray(obj)) return {};
+    const clean = {};
+    Object.keys(obj).forEach((k) => {
+      const n = parseInt(obj[k], 10);
+      if (CATALOG[k] && Number.isFinite(n) && n > 0) clean[k] = Math.min(n, 99);
+    });
+    return clean;
+  } catch { return {}; }
+}
+
+function saveCart(c) { localStorage.setItem("fj_cart", JSON.stringify(c)); }
+
+function cartCount(c) {
+  return Object.keys(c).reduce((sum, k) => sum + c[k], 0);
+}
+
+function money(n) { return "$" + n.toFixed(2); }
+
+function renderCart() {
+  const cart = loadCart();
+  const count = cartCount(cart);
+
+  const badge = document.getElementById("cart-count");
+  if (badge) badge.textContent = String(count);
+
+  const body = document.getElementById("cart-body");
+  const totals = document.getElementById("cart-totals");
+  if (!body || !totals) return;
+
+  body.innerHTML = "";
+  totals.innerHTML = "";
+
+  if (!count) {
+    const p = document.createElement("div");
+    p.className = "cart-empty";
+    p.textContent = "Your cart is empty. So is the warehouse. So is the legal defense fund.";
+    body.appendChild(p);
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.className = "cart";
+  table.innerHTML =
+    "<tr><th>Item</th><th>Qty</th><th>Price</th><th>Line</th><th></th></tr>";
+
+  let subtotal = 0;
+  Object.keys(cart).forEach((id) => {
+    const item = CATALOG[id];
+    const qty = cart[id];
+    const line = item.price * qty;
+    subtotal += line;
+
+    const tr = document.createElement("tr");
+
+    const tdName = document.createElement("td");
+    tdName.textContent = item.name;
+
+    const tdQty = document.createElement("td");
+    tdQty.className = "num";
+    tdQty.textContent = String(qty);
+
+    const tdPrice = document.createElement("td");
+    tdPrice.className = "num";
+    tdPrice.textContent = money(item.price);
+
+    const tdLine = document.createElement("td");
+    tdLine.className = "num";
+    tdLine.textContent = money(line);
+
+    const tdBtn = document.createElement("td");
+    const rm = document.createElement("button");
+    rm.type = "button";
+    rm.textContent = "REMOVE";
+    rm.addEventListener("click", () => {
+      const c = loadCart();
+      if (!c[id]) return;
+      c[id] -= 1;
+      if (c[id] <= 0) delete c[id];
+      saveCart(c);
+      renderCart();
+    });
+    tdBtn.appendChild(rm);
+
+    [tdName, tdQty, tdPrice, tdLine, tdBtn].forEach((td) => tr.appendChild(td));
+    table.appendChild(tr);
+  });
+
+  body.appendChild(table);
+
+  // 1995 sales tax, applied with total seriousness to imaginary goods.
+  const tax = subtotal * 0.0825;
+  const grand = subtotal + tax;
+
+  const rows = [
+    ["Subtotal", money(subtotal)],
+    ["Shipping", "$0.00 (nothing ships)"],
+    ["Tax (8.25%)", money(tax)],
+  ];
+  rows.forEach(([k, v]) => {
+    const d = document.createElement("div");
+    const a = document.createElement("span");
+    a.textContent = k;
+    const b = document.createElement("span");
+    b.textContent = v;
+    d.appendChild(a); d.appendChild(b);
+    totals.appendChild(d);
+  });
+
+  const g = document.createElement("div");
+  g.className = "grand";
+  const ga = document.createElement("span");
+  ga.textContent = "TOTAL DUE";
+  const gb = document.createElement("span");
+  gb.textContent = money(grand);
+  g.appendChild(ga); g.appendChild(gb);
+  totals.appendChild(g);
+
+  if (grand > 100) {
+    const note = document.createElement("div");
+    note.style.cssText = "margin-top:8px;font-size:11px;color:#444;";
+    note.textContent = "Financing available. Not really. None of this is available.";
+    totals.appendChild(note);
+  }
+}
+
+function showCart(scroll) {
+  const win = document.getElementById("cart-window");
+  if (!win) return;
+  win.classList.add("show");
+  if (scroll) win.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function emptyCart() {
+  saveCart({});
+  renderCart();
+  const log = document.getElementById("checkout-log");
+  if (log) log.textContent = "";
+}
+
+function addToCart(id, btn) {
+  const cart = loadCart();
+  cart[id] = Math.min((cart[id] || 0) + 1, 99);
+  saveCart(cart);
+  renderCart();
+  showCart(false);
+
+  // Flash confirmation without disabling: clicking twice quickly should
+  // add two, not silently drop the second one.
+  if (btn) {
+    clearTimeout(btn._flash);
+    btn.textContent = "ADDED ✓";
+    btn._flash = setTimeout(() => { btn.textContent = "ADD TO CART"; }, 700);
+  }
+
+  // Rewards for excessive commitment to a fake store.
+  const n = cart[id];
+  if (n === 5) {
+    setTimeout(() => say("Five of them.\n\nThe warehouse does not exist and you have now emptied it."), 750);
+  } else if (n === 13) {
+    setTimeout(() => say("Thirteen.\n\nAt this point we are legally obligated to ask if you are okay."), 750);
+  } else if (n === 31) {
+    setTimeout(() => say("THIRTY-ONE OF THE SAME ITEM\n\nYou have out-committed the entire campaign. Joey would be moved, if he were real, and reachable."), 750);
+  }
+}
+
+function runCheckout() {
+  const cart = loadCart();
+  const log = document.getElementById("checkout-log");
+  const btn = document.getElementById("checkout-btn");
+  if (!log) return;
+
+  if (!cartCount(cart)) {
+    log.textContent = "Cannot check out an empty cart.\nEven this store has standards.\n";
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  log.textContent = "";
+
+  const lines = [
+    "CONNECTING TO ORDER PROCESSING...",
+    "ATDT 1-800-555-0199",
+    "CONNECT 28800",
+    "",
+    "VALIDATING CART ................... OK",
+    "CHECKING INVENTORY ...............",
+  ];
+
+  Object.keys(cart).forEach((id) => {
+    const nm = CATALOG[id].name;
+    lines.push("   " + (nm.length > 34 ? nm.slice(0, 31) + "..." : nm).padEnd(36, ".") + " 0 in stock");
+  });
+
+  lines.push(
+    "",
+    "INVENTORY CHECK COMPLETE.",
+    "   items requested : " + cartCount(cart),
+    "   items available : 0",
+    "",
+    "CALCULATING SHIPPING...",
+    "   your location : unknown",
+    "   our location  : also unknown",
+    "   distance      : undefined",
+    "   arrival       : never",
+    "",
+    "CONTACTING PAYMENT PROCESSOR......",
+    "   ERROR: no payment processor configured",
+    "   ERROR: no payment processor has ever been configured",
+    "   ERROR: there is no store",
+    "",
+    "ORDER CANCELLED. NO CHARGE. NO CARD WAS ASKED FOR.",
+    "",
+    "Your cart has been left exactly as you built it,",
+    "out of respect for the effort.",
+    ""
+  );
+
+  let i = 0;
+  const step = () => {
+    if (i >= lines.length) {
+      if (btn) btn.disabled = false;
+      return;
+    }
+    log.textContent += lines[i] + "\n";
+    log.scrollTop = log.scrollHeight;
+    i++;
+    setTimeout(step, i < 5 ? 240 : 130);
+  };
+  step();
+}
+
+function initStore() {
+  const buttons = document.querySelectorAll("button[data-id]");
+  if (!buttons.length) return;
+
+  buttons.forEach((b) => {
+    CATALOG[b.dataset.id] = {
+      name: b.dataset.name,
+      price: parseFloat(b.dataset.price),
+    };
+    b.addEventListener("click", () => addToCart(b.dataset.id, b));
+  });
+
+  const co = document.getElementById("checkout-btn");
+  if (co) co.addEventListener("click", runCheckout);
+
+  const ec = document.getElementById("empty-btn");
+  if (ec) ec.addEventListener("click", emptyCart);
+
+  renderCart();
+  if (cartCount(loadCart())) showCart(false);
+}
+
 /* ---------------- init ---------------- */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -454,6 +887,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initWindows();
   initSaver();
   initPetition();
+  initMenus();
+  initStore();
   runBoot();
 
   const donateBtn = document.getElementById("donate-btn");
