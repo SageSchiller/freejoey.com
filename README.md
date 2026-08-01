@@ -46,6 +46,19 @@ the fake visitor counter, the CRT on/off preference, and petition handles.
 The "donate" button and the store's "add to cart" buttons are pure theater
 and never touch the network.
 
+The petition is deliberately local-only. Making it a shared list was
+considered and rejected: it is easy to build (Workers KV, one key per
+signature to avoid read-modify-write races), but a public unauthenticated
+write endpoint brings bot spam, an ongoing moderation duty for whatever
+strangers type onto this domain, and personal-data handling once people
+enter real names. Not worth it for a placeholder. If that ever changes,
+the shape is KV + Turnstile + a strict charset allowlist + a delete path.
+
+Signatures are rendered with `createElement` + `textContent`, never
+`innerHTML`. Keep it that way. In `bbs.js`, terminal output goes through
+`insertAdjacentHTML` with the manual `esc()` helper, so any new text there
+must be passed through `esc()` too.
+
 ## Content notes
 
 This is satire/parody of a fictional film character. Every page carries one
