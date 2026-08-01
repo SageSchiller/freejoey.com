@@ -301,24 +301,45 @@ const BOOT_LINES = [
   "C:\\> WIN",
 ];
 
-function runBoot() {
-  const target = document.getElementById("boot");
-  if (!target) return;
-  if (sessionStorage.getItem("fj_booted") === "1") {
-    target.remove();
-    return;
-  }
-  sessionStorage.setItem("fj_booted", "1");
-  document.body.style.overflow = "hidden";
+// Builds the DOS screen markup. index.html ships one inline so the first
+// paint is already black; every other page gets one created on demand when
+// the machine is restarted from the shutdown screen.
+function makeBootScreen() {
+  const el = document.createElement("div");
+  el.id = "boot";
+  const out = document.createElement("span");
+  out.className = "boot-out";
+  const cur = document.createElement("span");
+  cur.className = "blink";
+  cur.textContent = "_";
+  const hint = document.createElement("span");
+  hint.className = "hint";
+  hint.textContent = "press any key to skip";
+  el.appendChild(out);
+  el.appendChild(cur);
+  el.appendChild(hint);
+  return el;
+}
 
+// Types BOOT_LINES into an existing boot screen, then tears it down.
+function playBoot(target, onDone) {
+  document.body.style.overflow = "hidden";
   const out = target.querySelector(".boot-out");
+  out.textContent = "";
+
   let i = 0;
   let timer = null;
+  let ended = false;
 
   const finish = () => {
+    if (ended) return;
+    ended = true;
     clearTimeout(timer);
+    target.removeEventListener("click", finish);
+    document.removeEventListener("keydown", finish);
     target.remove();
     document.body.style.overflow = "";
+    if (onDone) onDone();
   };
 
   const step = () => {
@@ -333,7 +354,38 @@ function runBoot() {
   step();
 
   target.addEventListener("click", finish);
-  document.addEventListener("keydown", finish, { once: true });
+  document.addEventListener("keydown", finish);
+}
+
+function runBoot() {
+  const target = document.getElementById("boot");
+  if (!target) return;
+  if (sessionStorage.getItem("fj_booted") === "1") {
+    target.remove();
+    return;
+  }
+  sessionStorage.setItem("fj_booted", "1");
+  playBoot(target, null);
+}
+
+// Power cycle: swap the shutdown screen for a boot screen and run the POST
+// again. No page reload, so the black never breaks.
+function restartMachine() {
+  const sd = document.getElementById("shutdown");
+  if (sd) sd.remove();
+  if (document.getElementById("boot")) return;
+
+  const screen = makeBootScreen();
+  document.body.appendChild(screen);
+  document.body.style.overflow = "hidden";
+
+  // Beat of black before the POST, like a monitor warming back up.
+  setTimeout(() => {
+    playBoot(screen, () => {
+      window.scrollTo(0, 0);
+      armSaver();
+    });
+  }, 600);
 }
 
 /* ---------------- Windows 3.1 modal dialog ---------------- */
@@ -466,7 +518,14 @@ function runShutdown() {
   let timer = null;
   let finished = false;
 
+  const onKey = () => {
+    if (!finished) { finish(); return; }
+    document.removeEventListener("keydown", onKey);
+    restartMachine();
+  };
+
   const finish = () => {
+    if (finished) return;
     finished = true;
     clearTimeout(timer);
     safe.textContent =
@@ -477,8 +536,6 @@ function runShutdown() {
     hint.className = "hint";
     hint.textContent = "click anywhere to restart";
     el.appendChild(hint);
-    el.addEventListener("click", () => location.reload());
-    document.addEventListener("keydown", () => location.reload(), { once: true });
   };
 
   const step = () => {
@@ -495,8 +552,15 @@ function runShutdown() {
   };
   step();
 
-  // Skipping ahead jumps to the end rather than cancelling the shutdown.
-  el.addEventListener("click", () => { if (!finished) finish(); });
+  // Mid-sequence a click skips to the end; on the final screen it restarts.
+  // One handler branching on state, so the click that finishes cannot also
+  // trigger the restart.
+  el.addEventListener("click", () => {
+    if (!finished) { finish(); return; }
+    document.removeEventListener("keydown", onKey);
+    restartMachine();
+  });
+  document.addEventListener("keydown", onKey);
 }
 
 /* ---------------- petition (local only) ---------------- */

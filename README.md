@@ -26,11 +26,21 @@ No framework, npm, backend, analytics, third-party scripts, or tracking.
   (`sessionStorage`), skippable with any key or click
 - **Shutdown sequence**: Start > Shut Down puts up a Win 3.1 confirm
   dialog, then runs the boot sequence in reverse and lands on the amber
-  "It's now safe to turn off your computer." Clicking mid-sequence skips
-  to the end rather than cancelling; clicking the final screen reloads.
-  Available on every page, since the taskbar is. `SOLIDARITY.DRV` declines
-  to terminate, which mirrors `NUANCE.SYS` failing to load on boot; keep
-  those two paired if you edit either list.
+  "It's now safe to turn off your computer." Clicking or pressing a key
+  mid-sequence skips to the end; doing it on the final screen powers the
+  machine back on and replays the POST, so the whole thing is a real
+  cycle. Available on every page, since the taskbar is. `SOLIDARITY.DRV`
+  declines to terminate, mirroring `NUANCE.SYS` failing to load on boot;
+  keep those two paired if you edit either list.
+
+The restart deliberately does not call `location.reload()`. It swaps the
+shutdown overlay for a boot screen and replays the POST in place, so the
+black never breaks and there is no white reload flash. `makeBootScreen()`
+builds the screen on demand, which is why the cycle works on pages that
+have no inline `#boot` (only `index.html` ships one, so its first paint is
+already black). `playBoot()` is shared by both entry points, and
+`restartMachine()` bails early if a boot screen already exists so repeated
+clicks cannot stack two.
 - **Draggable windows**: grab any title bar on a pointer device. Minimize
   rolls a window up; the X button is a joke. Start > "Reset window layout"
   puts everything back.
