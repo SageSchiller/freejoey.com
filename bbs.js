@@ -31,14 +31,17 @@ const FILES = {
     "There is a lot of opinion here.",
   ],
   "JOEY.NFO": [
-    "HANDLE    : Joey (surname Pardella)",
-    "STATUS    : Fictional. Also, free. Always has been.",
-    "EQUIPMENT : 28.8k, eventually. Had to beg for it.",
-    "SKILL     : Contested.",
-    "NERVE     : Underrated.",
+    "HANDLE    : none, and it ate him up",
+    "STATUS    : IN CUSTODY. U.S. Secret Service.",
+    "CHARGES   : not announced",
+    "RELEASED  : no date given",
+    "EQUIPMENT : seized",
+    "SKILL     : contested",
+    "NERVE     : underrated",
     "NOTE      : Downloaded the garbage file that broke the whole case",
-    "            open. Got the entire scene raided doing it. Showed up",
-    "            anyway when the Gibson needed saving.",
+    "            open, then hid the disk while they were carrying his",
+    "            monitor down the stairs. It is the only hard evidence",
+    "            anyone has. He is the only one they took in for it.",
   ],
   "RULES.TXT": [
     "1. No flooding.",
@@ -204,10 +207,11 @@ const COMMANDS = {
     if ((arg || "").toUpperCase() === "JOEY") {
       writeLines([
         "",
-        "  *** HE IS ALREADY FREE ***",
+        "  *** F R E E   J O E Y ***",
         "",
-        "  That has been the position of this board from day one.",
-        "  We simply feel it should be commemorated more aggressively.",
+        "  One garbage file. One raid. One kid in custody.",
+        "  He did not write the virus. He is the reason you can prove",
+        "  who did.",
         "",
       ], "amber");
     } else {
