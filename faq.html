@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FREE JOEY — FAQ</title>
+<meta name="description" content="Frequently asked questions about a campaign nobody asked for.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="progman window">
+  <div class="title-bar">
+    <span><span class="title-icon">🖳</span>Program Manager</span>
+    <div class="controls"><span>▾</span><span>▴</span></div>
+  </div>
+  <div class="window-body">
+    <div class="progman-icons">
+      <a href="index.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="4" y="1" width="1" height="14" fill="#000"/><polygon points="5,1 13,3 5,7" fill="#c00"/></svg>
+        <span>MANIFESTO</span>
+      </a>
+      <a href="evidence.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="2" y="1" width="12" height="14" fill="#fff" stroke="#000"/><rect x="4" y="3" width="8" height="1" fill="#000"/><rect x="4" y="5" width="8" height="1" fill="#000"/><rect x="4" y="7" width="5" height="1" fill="#000"/><rect x="4" y="10" width="8" height="1" fill="#c00"/></svg>
+        <span>EVIDENCE</span>
+      </a>
+      <a href="merch.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="3" y="6" width="10" height="8" fill="#000080" stroke="#000"/><path d="M6 6 V4 a2 2 0 0 1 4 0 V6" fill="none" stroke="#000"/></svg>
+        <span>MERCH</span>
+      </a>
+      <a href="faq.html" class="active">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><circle cx="8" cy="8" r="6" fill="#fff" stroke="#000"/><text x="8" y="12" font-size="9" text-anchor="middle" font-family="monospace" fill="#000080">?</text></svg>
+        <span>FAQ</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="window">
+  <div class="title-bar">
+    <span><span class="title-icon">❓</span>FAQ.TXT — Notepad</span>
+    <div class="controls"><span>_</span><span>▢</span><span>X</span></div>
+  </div>
+  <div class="menu-bar">
+    <span onclick="fileMenuExit()"><u>F</u>ile</span>
+    <span><u>E</u>dit</span>
+    <span><u>S</u>earch</span>
+    <span onclick="helpMenuAbout()"><u>H</u>elp</span>
+  </div>
+  <div class="window-body">
+
+    <p class="faq-q">1. Is Joey a real person?</p>
+    <p class="faq-a">No. Joey Pardella is a fictional character from the
+    1995 film <em>Hackers</em>, played by Jesse Bradford. Nobody is being
+    held anywhere, freed, or otherwise legally affected by this website.</p>
+
+    <p class="faq-q">2. Is this a real fundraiser?</p>
+    <p class="faq-a">No. We do not collect money, personal information, or
+    payment details anywhere on this site. If anything on this site ever
+    asks you for a card number, close the tab immediately and assume the
+    worst.</p>
+
+    <p class="faq-q">3. Why does this site exist?</p>
+    <p class="faq-a">Because "Free Kevin" was a real hacker solidarity
+    campaign in the 1990s protesting Kevin Mitnick's imprisonment, and we
+    thought Joey deserved a little of that energy too &mdash; even though,
+    again, nobody arrested him. Some of us just identify with the
+    not-quite-confident-enough hacker in the group chat.</p>
+
+    <p class="faq-q">4. Are you affiliated with the movie, MGM, or United Artists?</p>
+    <p class="faq-a">No. This is an unofficial fan project made purely for
+    fun and commentary. All rights to <em>Hackers</em> (1995) belong to
+    their respective owners. This site claims no ownership over the film,
+    its characters, or its aesthetic beyond obvious parody.</p>
+
+    <p class="faq-q">5. Can I submit evidence or updates?</p>
+    <p class="faq-a">There's no contact form, on purpose &mdash; see
+    question 2 about not collecting anything from you. Feel free to yell
+    into the void instead. It has historically been just as effective.</p>
+
+    <p class="faq-q">6. Why does this website look like this?</p>
+    <p class="faq-a">Because 1995 had the aesthetic right the first time,
+    and nobody has meaningfully improved on Program Manager since.</p>
+
+    <p class="faq-q">7. What happened to Kevin, the guy this is based on?</p>
+    <p class="faq-a">Kevin Mitnick was a real person, released from federal
+    custody in 2000, and later became a well-known security consultant and
+    author before his death in 2023. His story is real and well documented;
+    Joey's is not. Please don't confuse the two, and please don't send
+    Kevin's family messages intended for a fictional character.</p>
+
+  </div>
+  <div class="status-bar">
+    <span>7 questions answered.</span>
+    <span>System time: <span id="sys-clock">--:--:--</span></span>
+  </div>
+</main>
+
+<p class="disclaimer">
+  FREE JOEY is an unofficial fan project and satire. Not affiliated with,
+  endorsed by, or sponsored by MGM, United Artists, or anyone who worked on
+  <em>Hackers</em> (1995). Joey Pardella is a fictional character. No actual
+  person is being held against his will. Hack the planet responsibly.
+</p>
+
+<script src="script.js"></script>
+</body>
+</html>

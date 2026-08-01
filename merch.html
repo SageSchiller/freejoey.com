@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FREE JOEY — Merch &amp; Donations</title>
+<meta name="description" content="Support the cause. Sort of. Not really. No payments are actually processed on this page.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="progman window">
+  <div class="title-bar">
+    <span><span class="title-icon">🖳</span>Program Manager</span>
+    <div class="controls"><span>▾</span><span>▴</span></div>
+  </div>
+  <div class="window-body">
+    <div class="progman-icons">
+      <a href="index.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="4" y="1" width="1" height="14" fill="#000"/><polygon points="5,1 13,3 5,7" fill="#c00"/></svg>
+        <span>MANIFESTO</span>
+      </a>
+      <a href="evidence.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="2" y="1" width="12" height="14" fill="#fff" stroke="#000"/><rect x="4" y="3" width="8" height="1" fill="#000"/><rect x="4" y="5" width="8" height="1" fill="#000"/><rect x="4" y="7" width="5" height="1" fill="#000"/><rect x="4" y="10" width="8" height="1" fill="#c00"/></svg>
+        <span>EVIDENCE</span>
+      </a>
+      <a href="merch.html" class="active">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><rect x="3" y="6" width="10" height="8" fill="#000080" stroke="#000"/><path d="M6 6 V4 a2 2 0 0 1 4 0 V6" fill="none" stroke="#000"/></svg>
+        <span>MERCH</span>
+      </a>
+      <a href="faq.html">
+        <svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#c0c0c0"/><circle cx="8" cy="8" r="6" fill="#fff" stroke="#000"/><text x="8" y="12" font-size="9" text-anchor="middle" font-family="monospace" fill="#000080">?</text></svg>
+        <span>FAQ</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="window">
+  <div class="title-bar">
+    <span><span class="title-icon">🛒</span>GENERAL STORE.EXE</span>
+    <div class="controls"><span>_</span><span>▢</span><span>X</span></div>
+  </div>
+  <div class="menu-bar">
+    <span onclick="fileMenuExit()"><u>F</u>ile</span>
+    <span><u>C</u>art (0)</span>
+    <span><u>O</u>ptions</span>
+    <span onclick="helpMenuAbout()"><u>H</u>elp</span>
+  </div>
+  <div class="window-body">
+
+    <p>Merchandise below is illustrative. No storefront is connected, no
+    inventory exists, and no orders can actually be placed. Prices are
+    listed in 1995 dollars as a bit.</p>
+
+    <table class="store">
+      <tr><th>Item</th><th>Price</th><th></th></tr>
+      <tr>
+        <td>"HACK THE PLANET" tee, unlicensed</td>
+        <td>$19.95</td>
+        <td><button class="btn31" type="button" onclick="alert('This store is not real. Nothing will be shipped. Not even disappointment.')">ADD TO CART</button></td>
+      </tr>
+      <tr>
+        <td>FREE JOEY enamel pin</td>
+        <td>$4.99</td>
+        <td><button class="btn31" type="button" onclick="alert('This store is not real. Nothing will be shipped. Not even disappointment.')">ADD TO CART</button></td>
+      </tr>
+      <tr>
+        <td>3.5&Prime; floppy disk sticker pack (10ct)</td>
+        <td>$6.66</td>
+        <td><button class="btn31" type="button" onclick="alert('This store is not real. Nothing will be shipped. Not even disappointment.')">ADD TO CART</button></td>
+      </tr>
+      <tr>
+        <td>"I Bailed Out Joey (Even Though He Was Never Arrested)" bumper sticker</td>
+        <td>$2.50</td>
+        <td><button class="btn31" type="button" onclick="alert('This store is not real. Nothing will be shipped. Not even disappointment.')">ADD TO CART</button></td>
+      </tr>
+    </table>
+
+    <div class="window-body paper" style="margin-left:0;margin-right:0;">
+      <h3 style="margin-top:0;">Official Donation Terminal</h3>
+      <p>Every dollar "raised" here goes directly toward absolutely nothing,
+      because this button does not process payments. Click it anyway. It's
+      cathartic.</p>
+      <button id="donate-btn" class="btn31 big" type="button">DONATE $31.37 NOW</button>
+
+      <div id="prank-panel">
+        <div class="terminal" id="prank-log" aria-live="polite"></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="status-bar">
+    <span>Store status: fictional.</span>
+    <span>System time: <span id="sys-clock">--:--:--</span></span>
+  </div>
+</main>
+
+<p class="disclaimer">
+  No payment information is collected anywhere on this page, ever, under any
+  circumstance. FREE JOEY is an unofficial fan project and satire, not
+  affiliated with MGM, United Artists, or anyone who worked on
+  <em>Hackers</em> (1995).
+</p>
+
+<script src="script.js"></script>
+</body>
+</html>

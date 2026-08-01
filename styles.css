@@ -1,0 +1,322 @@
+/* FREE JOEY — Windows 3.1 Program Manager pastiche.
+   No frameworks, no webfonts, no build step. */
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "MS Sans Serif", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 13px;
+  color: #000;
+  background-color: #008080;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px);
+  min-height: 100vh;
+  padding: 18px;
+}
+
+a { color: #00007b; }
+a:visited { color: #4b0082; }
+
+/* ---------- generic beveled window ---------- */
+
+.window {
+  background: #c0c0c0;
+  border: 2px solid #dfdfdf;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #fff;
+  margin: 0 auto 16px auto;
+  max-width: 760px;
+}
+
+.title-bar {
+  background: linear-gradient(90deg, #000080, #1084d0 140%);
+  color: #fff;
+  font-weight: bold;
+  padding: 3px 4px 3px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  letter-spacing: 0.5px;
+}
+
+.title-bar .title-icon {
+  margin-right: 6px;
+}
+
+.title-bar .controls {
+  display: flex;
+  gap: 3px;
+}
+
+.title-bar .controls span {
+  display: inline-block;
+  width: 16px;
+  height: 14px;
+  background: #c0c0c0;
+  color: #000;
+  border: 1px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  font-size: 10px;
+  line-height: 12px;
+  text-align: center;
+  font-weight: normal;
+  cursor: default;
+}
+
+.menu-bar {
+  display: flex;
+  gap: 14px;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+  padding: 3px 8px;
+  font-size: 12px;
+}
+
+.menu-bar span {
+  cursor: default;
+}
+
+.menu-bar span:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.menu-bar span u {
+  text-decoration: underline;
+}
+
+.window-body {
+  padding: 14px 18px;
+  background: #c0c0c0;
+}
+
+.window-body.paper {
+  background: #fff;
+  margin: 10px;
+  padding: 16px 20px;
+  border: 1px solid #808080;
+  box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #808080;
+}
+
+.status-bar {
+  border-top: 1px solid #fff;
+  box-shadow: 0 -1px 0 #808080;
+  padding: 3px 8px;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ---------- program manager nav ---------- */
+
+.progman {
+  max-width: 760px;
+  margin: 0 auto 16px auto;
+}
+
+.progman .window-body {
+  padding: 10px 14px;
+}
+
+.progman-icons {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.progman-icons a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 78px;
+  text-decoration: none;
+  color: #000;
+  text-align: center;
+  padding: 4px;
+  border: 1px dashed transparent;
+}
+
+.progman-icons a:hover {
+  border-color: #000;
+}
+
+.progman-icons a.active {
+  background: #000080;
+  color: #fff;
+}
+
+.progman-icons svg {
+  width: 32px;
+  height: 32px;
+  shape-rendering: crispEdges;
+  margin-bottom: 3px;
+}
+
+.progman-icons span {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+/* ---------- retro buttons ---------- */
+
+.btn31 {
+  font-family: inherit;
+  font-size: 13px;
+  background: #c0c0c0;
+  border: 2px solid #fff;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  padding: 6px 16px;
+  cursor: pointer;
+  color: #000;
+}
+
+.btn31:active {
+  border-color: #000;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+}
+
+.btn31.big {
+  font-weight: bold;
+  font-size: 16px;
+  padding: 12px 22px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+
+/* ---------- terminal / bbs panel ---------- */
+
+.terminal {
+  background: #000;
+  color: #33ff33;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  padding: 14px;
+  border: 2px inset #808080;
+  margin: 12px 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.terminal .amber { color: #ffb000; }
+.terminal .dim { color: #1c8c1c; }
+.terminal .prompt::before { content: "C:\\FREEJOEY> "; color: #33ff33; opacity: 0.7; }
+
+.blink {
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.ascii {
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  line-height: 1.1;
+  white-space: pre;
+  overflow-x: auto;
+  margin: 6px 0 16px 0;
+}
+
+.log-entry {
+  border-bottom: 1px dashed #808080;
+  padding: 10px 0;
+}
+
+.log-entry:last-child { border-bottom: none; }
+
+.log-entry .stamp {
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  color: #444;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.log-entry h3 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+}
+
+.disclaimer {
+  max-width: 760px;
+  margin: 0 auto 24px auto;
+  font-size: 11px;
+  color: #d9f4f4;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.disclaimer a { color: #fff; }
+
+table.store {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 18px 0;
+}
+
+table.store th, table.store td {
+  border: 1px solid #808080;
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 12px;
+}
+
+table.store th {
+  background: #000080;
+  color: #fff;
+}
+
+table.store tr:nth-child(even) td {
+  background: #e8e8e8;
+}
+
+.hit-counter {
+  font-family: "Courier New", monospace;
+  background: #000;
+  color: #0f0;
+  padding: 2px 6px;
+  border: 2px inset #808080;
+  letter-spacing: 2px;
+}
+
+.faq-q {
+  font-weight: bold;
+  margin-top: 14px;
+}
+
+.faq-a {
+  margin: 4px 0 0 0;
+}
+
+#prank-panel {
+  display: none;
+  margin-top: 14px;
+}
+
+#prank-panel.show {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .progman-icons a { width: 66px; }
+  body { padding: 8px; }
+}
