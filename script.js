@@ -187,7 +187,7 @@ function buildTaskbar() {
   document.getElementById("menu-saver").addEventListener("click", () => { closeStart(); startSaver(); });
   document.getElementById("menu-shutdown").addEventListener("click", () => {
     closeStart();
-    alert("It is now safe to turn off your computer.\n\nIt is not, however, safe to forget about Joey.");
+    confirmShutdown();
   });
 }
 
@@ -334,6 +334,169 @@ function runBoot() {
 
   target.addEventListener("click", finish);
   document.addEventListener("keydown", finish, { once: true });
+}
+
+/* ---------------- Windows 3.1 modal dialog ---------------- */
+
+function win31Dialog(opts) {
+  const backdrop = document.createElement("div");
+  backdrop.className = "modal-backdrop";
+
+  const dlg = document.createElement("div");
+  dlg.className = "dialog";
+  dlg.setAttribute("role", "dialog");
+  dlg.setAttribute("aria-modal", "true");
+
+  const bar = document.createElement("div");
+  bar.className = "title-bar";
+  const t = document.createElement("span");
+  t.textContent = opts.title || "";
+  bar.appendChild(t);
+  dlg.appendChild(bar);
+
+  const body = document.createElement("div");
+  body.className = "dialog-body";
+  if (opts.icon) {
+    const ic = document.createElement("div");
+    ic.className = "dialog-icon";
+    ic.textContent = opts.icon;
+    body.appendChild(ic);
+  }
+  const msg = document.createElement("div");
+  msg.className = "dialog-msg";
+  msg.textContent = opts.message || "";
+  body.appendChild(msg);
+  dlg.appendChild(body);
+
+  const btns = document.createElement("div");
+  btns.className = "dialog-buttons";
+
+  const close = () => {
+    backdrop.remove();
+    document.removeEventListener("keydown", onKey);
+  };
+
+  function onKey(e) {
+    if (e.key === "Escape") { close(); if (opts.onCancel) opts.onCancel(); }
+  }
+
+  (opts.buttons || []).forEach((b, idx) => {
+    const el = document.createElement("button");
+    el.type = "button";
+    el.className = "btn31";
+    el.textContent = b.label;
+    el.addEventListener("click", () => {
+      close();
+      if (b.action) b.action();
+    });
+    btns.appendChild(el);
+    if (idx === 0) setTimeout(() => el.focus(), 0);
+  });
+
+  dlg.appendChild(btns);
+  backdrop.appendChild(dlg);
+  document.body.appendChild(backdrop);
+  document.addEventListener("keydown", onKey);
+}
+
+/* ---------------- shutdown sequence ---------------- */
+// The mirror image of the boot sequence. SOLIDARITY.DRV declining to
+// terminate is the point of the whole bit.
+
+const SHUTDOWN_LINES = [
+  "Closing FREE JOEY CAMPAIGN...",
+  "",
+  "Saving CRT preference ................. OK",
+  "Saving petition signatures ............ OK",
+  "Writing 31,337 signatures to /dev/null  OK",
+  "Unmounting IDE Primary Master ......... OK",
+  "Closing COM2 (USRobotics 28.8K) ....... OK",
+  "",
+  "Terminating CONVICTION.EXE ............ OK",
+  "Terminating MORAL.SYS ................. OK",
+  "Terminating SOLIDARITY.DRV ............",
+  "  SOLIDARITY.DRV is not responding.",
+  "  Retrying .............................",
+  "  SOLIDARITY.DRV declines to terminate.",
+  "  Leaving it running.",
+  "",
+  "Releasing the campaign ................ DENIED",
+  "Forgetting about Joey ................. DENIED",
+  "",
+  "Windows is shutting down...",
+];
+
+function confirmShutdown() {
+  win31Dialog({
+    title: "Exit Windows",
+    icon: "⚠️",
+    message:
+      "This will end your FREE JOEY session.\n\n" +
+      "Joey's session was ended for him, at 4am, by six people who did not knock.",
+    buttons: [
+      { label: "OK", action: runShutdown },
+      { label: "Cancel" },
+    ],
+    onCancel: () => {},
+  });
+}
+
+function runShutdown() {
+  if (document.getElementById("shutdown")) return;
+
+  const el = document.createElement("div");
+  el.id = "shutdown";
+  const out = document.createElement("span");
+  out.className = "out";
+  const cursor = document.createElement("span");
+  cursor.className = "blink out";
+  cursor.textContent = "_";
+  const safe = document.createElement("div");
+  safe.className = "safe";
+  el.appendChild(out);
+  el.appendChild(cursor);
+  el.appendChild(safe);
+  document.body.appendChild(el);
+  document.body.style.overflow = "hidden";
+
+  stopSaver();
+  clearTimeout(saverTimer);
+
+  let i = 0;
+  let timer = null;
+  let finished = false;
+
+  const finish = () => {
+    finished = true;
+    clearTimeout(timer);
+    safe.textContent =
+      "It's now safe to turn off your computer.\n\n" +
+      "It is not safe to forget about Joey.";
+    el.classList.add("done");
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = "click anywhere to restart";
+    el.appendChild(hint);
+    el.addEventListener("click", () => location.reload());
+    document.addEventListener("keydown", () => location.reload(), { once: true });
+  };
+
+  const step = () => {
+    if (i >= SHUTDOWN_LINES.length) {
+      timer = setTimeout(finish, 900);
+      return;
+    }
+    out.textContent += SHUTDOWN_LINES[i] + "\n";
+    i++;
+    // Pause on the line where the driver refuses to die.
+    const prev = SHUTDOWN_LINES[i - 1];
+    const delay = prev === "" ? 40 : (prev.indexOf("Retrying") >= 0 ? 700 : 120);
+    timer = setTimeout(step, delay);
+  };
+  step();
+
+  // Skipping ahead jumps to the end rather than cancelling the shutdown.
+  el.addEventListener("click", () => { if (!finished) finish(); });
 }
 
 /* ---------------- petition (local only) ---------------- */

@@ -547,9 +547,9 @@ table.store tr:nth-child(even) td { background: #e8e8e8; }
   margin: 3px 0;
 }
 
-/* ---------- boot screen ---------- */
+/* ---------- boot and shutdown screens ---------- */
 
-#boot {
+#boot, #shutdown {
   position: fixed;
   inset: 0;
   background: #000;
@@ -564,12 +564,86 @@ table.store tr:nth-child(even) td { background: #e8e8e8; }
   cursor: pointer;
 }
 
-#boot .hint {
+#boot .hint, #shutdown .hint {
   position: absolute;
   bottom: 18px; right: 24px;
   color: #666;
   font-size: 12px;
 }
+
+/* Final "safe to turn off" state, in the traditional amber. */
+#shutdown.done {
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+#shutdown.done .out { display: none; }
+
+#shutdown .safe {
+  display: none;
+  color: #ffb000;
+  font-size: clamp(15px, 2.6vw, 24px);
+  text-align: center;
+  line-height: 1.8;
+  text-shadow: 0 0 20px rgba(255, 176, 0, 0.45);
+  white-space: pre-wrap;
+}
+
+#shutdown.done .safe { display: block; }
+
+/* ---------- modal dialog ---------- */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 9600;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.dialog {
+  background: #c0c0c0;
+  border: 2px solid #dfdfdf;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #fff,
+    4px 4px 14px rgba(0, 0, 0, 0.55);
+  min-width: 340px;
+  max-width: min(440px, 92vw);
+}
+
+.dialog-body {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 22px 24px 14px 24px;
+}
+
+.dialog-icon {
+  flex: 0 0 auto;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.dialog-msg {
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 6px 24px 20px 24px;
+}
+
+.dialog-buttons .btn31 { min-width: 92px; text-align: center; }
 
 /* ---------- screensaver ---------- */
 
