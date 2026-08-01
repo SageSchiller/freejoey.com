@@ -1,4 +1,4 @@
-// FREE JOEY BBS — a fake dial-up board you can actually type at.
+// FREE JOEY BBS - a fake dial-up board you can actually type at.
 // Entirely client-side. Nothing you type is stored, logged, or transmitted.
 
 const SCREEN = () => document.getElementById("bbs-screen");
@@ -40,19 +40,6 @@ const FILES = {
     "            open. Got the entire scene raided doing it. Showed up",
     "            anyway when the Gibson needed saving.",
   ],
-  "KEVIN.TXT": [
-    "The 'Free Kevin' campaign was real.",
-    "",
-    "Kevin Mitnick was arrested in 1995 and held for years, much of it",
-    "without trial. Hackers printed bumper stickers, ran banner ads, and",
-    "hung 'FREE KEVIN' signs at 2600 meetings until his release in 2000.",
-    "He went on to work as a security consultant and author. He died in",
-    "2023.",
-    "",
-    "That was a real person and a real fight over real due process.",
-    "This board is a joke about a movie character. Please do not confuse",
-    "the two, and please leave his family alone.",
-  ],
   "RULES.TXT": [
     "1. No flooding.",
     "2. No trading anything you shouldn't have.",
@@ -90,7 +77,6 @@ const COMMANDS = {
       "  WHO             Who else is online right now.",
       "  FINGER JOEY     Look up a user.",
       "  TRACE           Run a traceroute on the blame.",
-      "  MITNICK         The real history behind all this.",
       "  SYSOP           Page the system operator.",
       "  DONATE          Contribute to the cause.",
       "  DATE            Current system date and time.",
@@ -165,8 +151,6 @@ const COMMANDS = {
     };
     step();
   },
-
-  MITNICK() { COMMANDS.TYPE("KEVIN.TXT"); },
 
   SYSOP() {
     writeLines(["", "Paging sysop", ""]);

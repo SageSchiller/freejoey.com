@@ -1,4 +1,4 @@
-// FREE JOEY — shared retro behavior.
+// FREE JOEY - shared retro behavior.
 // Everything here is local to the browser: no network calls, no analytics,
 // nothing collected or transmitted. localStorage is used only for the
 // cosmetic hit counter, the CRT preference, and locally-stored petition

@@ -1,5 +1,5 @@
 {
-  // Cloudflare Workers config. Serves the static site as assets — no
+  // Cloudflare Workers config. Serves the static site as assets, with no
   // custom fetch logic needed, so there's no "main" worker script.
   "name": "freejoeycom",
   "compatibility_date": "2026-06-01",

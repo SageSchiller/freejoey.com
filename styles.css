@@ -1,4 +1,4 @@
-/* FREE JOEY — Windows 3.1 / BBS pastiche.
+/* FREE JOEY - Windows 3.1 / BBS pastiche.
    No frameworks, no webfonts, no build step. */
 
 * { box-sizing: border-box; }
@@ -308,11 +308,16 @@ body.no-crt #crt { display: none; }
 
 .ascii {
   font-family: "Courier New", monospace;
-  font-size: 11px;
-  line-height: 1.1;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.15;
   white-space: pre;
   overflow-x: auto;
-  margin: 6px 0 16px 0;
+  margin: 6px 0 18px 0;
+}
+
+@media (max-width: 620px) {
+  .ascii { font-size: 10px; line-height: 1.1; font-weight: normal; }
 }
 
 /* ---------- interactive BBS console ---------- */
