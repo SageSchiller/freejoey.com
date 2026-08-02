@@ -202,49 +202,220 @@ function closeStart() {
 
 let saverTimer = null;
 let saverRAF = null;
+let saverStartedAt = 0;
+
+// Deliberately crude 8-bit iconography rather than any attempt at a
+// likeness. H hair, S skin, W eye white, P pupil, N nose, M mouth.
+const JOEY_PIXELS = [
+  "...HHHHHHHH...",
+  ".HHHHHHHHHHHH.",
+  "HHHHHHHHHHHHHH",
+  "HHHSSSSSSSSHHH",
+  "HHSSSSSSSSSSHH",
+  "HSSSSSSSSSSSSH",
+  "HSSWPSSSSWPSSH",
+  "HSSWPSSSSWPSSH",
+  "HSSSSSSSSSSSSH",
+  "HSSSSSNNSSSSSH",
+  "HSSSSSSSSSSSSH",
+  ".SSSMMMMMMSSS.",
+  ".SSSSMMMMSSSS.",
+  "..SSSSSSSSSS..",
+  "...SSSSSSSS...",
+  ".....SSSS.....",
+];
+
+const PIX = {
+  H: "#2e1c12", S: "#e9b98b", W: "#ffffff",
+  P: "#101010", N: "#c99468", M: "#7d3030",
+};
+
+function drawJoey(ctx, x, y, s, hueShift) {
+  if (hueShift) { ctx.save(); ctx.filter = `hue-rotate(${hueShift}deg)`; }
+  for (let r = 0; r < JOEY_PIXELS.length; r++) {
+    const row = JOEY_PIXELS[r];
+    for (let c = 0; c < row.length; c++) {
+      const k = row[c];
+      if (k === ".") continue;
+      ctx.fillStyle = PIX[k];
+      ctx.fillRect(x + c * s, y + r * s, s, s);
+    }
+  }
+  if (hueShift) ctx.restore();
+}
+
+/* --- saver 1: starfield --- */
+function saverStarfield(ctx, c) {
+  const stars = Array.from({ length: 220 }, () => ({
+    x: (Math.random() - 0.5) * c.width,
+    y: (Math.random() - 0.5) * c.height,
+    z: Math.random() * c.width,
+  }));
+  return () => {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, c.width, c.height);
+    const cx = c.width / 2, cy = c.height / 2;
+    ctx.fillStyle = "#33ff33";
+    for (const s of stars) {
+      s.z -= 4;
+      if (s.z <= 1) {
+        s.x = (Math.random() - 0.5) * c.width;
+        s.y = (Math.random() - 0.5) * c.height;
+        s.z = c.width;
+      }
+      const k = 128 / s.z;
+      const px = s.x * k + cx, py = s.y * k + cy;
+      if (px < 0 || px >= c.width || py < 0 || py >= c.height) continue;
+      ctx.fillRect(px, py, Math.max(1, (1 - s.z / c.width) * 3), Math.max(1, (1 - s.z / c.width) * 3));
+    }
+    ctx.font = "bold 30px 'Courier New', monospace";
+    ctx.fillStyle = "#33ff33";
+    ctx.textAlign = "center";
+    ctx.fillText("FREE JOEY", cx, cy);
+  };
+}
+
+/* --- saver 2: bouncing Joey, DVD-logo rules --- */
+function saverBounce(ctx, c) {
+  const s = Math.max(3, Math.round(Math.min(c.width, c.height) / 110));
+  const w = JOEY_PIXELS[0].length * s;
+  const h = JOEY_PIXELS.length * s;
+  let x = Math.random() * (c.width - w);
+  let y = Math.random() * (c.height - h);
+  let vx = 2.2, vy = 1.7, hue = 0, corners = 0;
+
+  return () => {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, c.width, c.height);
+
+    x += vx; y += vy;
+    let hitX = false, hitY = false;
+    if (x <= 0) { x = 0; vx = -vx; hitX = true; }
+    if (x + w >= c.width) { x = c.width - w; vx = -vx; hitX = true; }
+    if (y <= 0) { y = 0; vy = -vy; hitY = true; }
+    if (y + h >= c.height) { y = c.height - h; vy = -vy; hitY = true; }
+    if (hitX || hitY) hue = (hue + 47) % 360;
+    // The thing everyone waits their whole life to see.
+    if (hitX && hitY) corners++;
+
+    drawJoey(ctx, x, y, s, hue);
+
+    ctx.font = "12px 'Courier New', monospace";
+    ctx.fillStyle = "#1c8c1c";
+    ctx.textAlign = "left";
+    ctx.fillText("corner hits: " + corners, 14, c.height - 16);
+    if (corners > 0) {
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#33ff33";
+      ctx.font = "bold 16px 'Courier New', monospace";
+      ctx.fillText("YOU SAW IT HAPPEN", c.width / 2, 34);
+    }
+  };
+}
+
+/* --- saver 3: flying floppies, with apologies to After Dark --- */
+function saverFloppies(ctx, c) {
+  const items = Array.from({ length: 14 }, () => ({
+    x: Math.random() * c.width,
+    y: Math.random() * c.height,
+    s: 0.6 + Math.random() * 0.9,
+    v: 1.2 + Math.random() * 2.2,
+    f: Math.random() * Math.PI * 2,
+  }));
+
+  function floppy(px, py, k, flap) {
+    const d = 26 * k;
+    // wings
+    ctx.fillStyle = "#d8d8d8";
+    const lift = Math.sin(flap) * d * 0.45;
+    ctx.beginPath();
+    ctx.moveTo(px, py + d * 0.3);
+    ctx.lineTo(px - d * 0.9, py + d * 0.3 - lift);
+    ctx.lineTo(px - d * 0.2, py + d * 0.55);
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(px + d, py + d * 0.3);
+    ctx.lineTo(px + d * 1.9, py + d * 0.3 - lift);
+    ctx.lineTo(px + d * 1.2, py + d * 0.55);
+    ctx.closePath(); ctx.fill();
+    // body
+    ctx.fillStyle = "#1a1a2e";
+    ctx.fillRect(px, py, d, d);
+    ctx.fillStyle = "#c0c0c0";
+    ctx.fillRect(px + d * 0.28, py, d * 0.44, d * 0.42);   // shutter
+    ctx.fillStyle = "#e8e8e8";
+    ctx.fillRect(px + d * 0.16, py + d * 0.58, d * 0.68, d * 0.34); // label
+  }
+
+  return () => {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, c.width, c.height);
+    for (const it of items) {
+      it.x -= it.v; it.y += it.v * 0.42; it.f += 0.18;
+      if (it.x < -60 || it.y > c.height + 60) {
+        it.x = c.width + Math.random() * 160;
+        it.y = -60 - Math.random() * c.height * 0.5;
+      }
+      floppy(it.x, it.y, it.s, it.f);
+    }
+  };
+}
+
+/* --- saver 4: mystify --- */
+function saverMystify(ctx, c) {
+  const mk = () => Array.from({ length: 4 }, () => ({
+    x: Math.random() * c.width, y: Math.random() * c.height,
+    vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+  }));
+  const shapes = [{ pts: mk(), hue: 140, trail: [] }, { pts: mk(), hue: 300, trail: [] }];
+
+  return () => {
+    ctx.fillStyle = "rgba(0,0,0,0.18)";
+    ctx.fillRect(0, 0, c.width, c.height);
+    for (const sh of shapes) {
+      for (const p of sh.pts) {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x <= 0 || p.x >= c.width) p.vx = -p.vx;
+        if (p.y <= 0 || p.y >= c.height) p.vy = -p.vy;
+      }
+      sh.trail.push(sh.pts.map((p) => ({ x: p.x, y: p.y })));
+      if (sh.trail.length > 14) sh.trail.shift();
+      sh.hue = (sh.hue + 0.6) % 360;
+      sh.trail.forEach((snap, i) => {
+        ctx.strokeStyle = `hsla(${sh.hue}, 100%, 60%, ${(i + 1) / sh.trail.length * 0.85})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        snap.forEach((p, j) => (j ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+        ctx.closePath();
+        ctx.stroke();
+      });
+    }
+  };
+}
+
+const SAVERS = [saverStarfield, saverBounce, saverFloppies, saverMystify];
+
+function nextSaverIndex() {
+  let n = parseInt(localStorage.getItem("fj_saver") || "0", 10);
+  if (!Number.isFinite(n) || n < 0) n = 0;
+  localStorage.setItem("fj_saver", String((n + 1) % SAVERS.length));
+  return n % SAVERS.length;
+}
 
 function startSaver() {
   const saver = document.getElementById("saver");
   if (!saver || saver.classList.contains("on")) return;
   saver.classList.add("on");
+  saverStartedAt = performance.now();
 
   const canvas = saver.querySelector("canvas");
   const ctx = canvas.getContext("2d");
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const stars = Array.from({ length: 220 }, () => ({
-    x: (Math.random() - 0.5) * canvas.width,
-    y: (Math.random() - 0.5) * canvas.height,
-    z: Math.random() * canvas.width,
-  }));
-
-  const draw = () => {
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    const cx = canvas.width / 2, cy = canvas.height / 2;
-    ctx.fillStyle = "#33ff33";
-    for (const s of stars) {
-      s.z -= 4;
-      if (s.z <= 1) {
-        s.x = (Math.random() - 0.5) * canvas.width;
-        s.y = (Math.random() - 0.5) * canvas.height;
-        s.z = canvas.width;
-      }
-      const k = 128 / s.z;
-      const px = s.x * k + cx;
-      const py = s.y * k + cy;
-      if (px < 0 || px >= canvas.width || py < 0 || py >= canvas.height) continue;
-      const size = Math.max(1, (1 - s.z / canvas.width) * 3);
-      ctx.fillRect(px, py, size, size);
-    }
-    ctx.font = "bold 30px 'Courier New', monospace";
-    ctx.fillStyle = "#33ff33";
-    ctx.textAlign = "center";
-    ctx.fillText("FREE JOEY", cx, cy);
-    saverRAF = requestAnimationFrame(draw);
-  };
-  draw();
+  const step = SAVERS[nextSaverIndex()](ctx, canvas);
+  const loop = () => { step(); saverRAF = requestAnimationFrame(loop); };
+  loop();
 }
 
 function stopSaver() {
@@ -269,7 +440,13 @@ function initSaver() {
 
   ["mousemove", "keydown", "scroll", "touchstart", "click"].forEach((evt) => {
     document.addEventListener(evt, () => {
-      if (saver.classList.contains("on")) stopSaver();
+      if (saver.classList.contains("on")) {
+        // Starting it from the Start menu is itself a click, and that click
+        // keeps bubbling to this listener. Without a grace window the saver
+        // switched on and straight back off, so the menu item looked dead.
+        if (performance.now() - saverStartedAt < 500) return;
+        stopSaver();
+      }
       armSaver();
     }, { passive: true });
   });
