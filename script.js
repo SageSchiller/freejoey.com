@@ -204,44 +204,51 @@ let saverTimer = null;
 let saverRAF = null;
 let saverStartedAt = 0;
 
-// Deliberately crude 8-bit iconography rather than any attempt at a
-// likeness. H hair, S skin, W eye white, P pupil, N nose, M mouth.
-const JOEY_PIXELS = [
-  "...HHHHHHHH...",
-  ".HHHHHHHHHHHH.",
-  "HHHHHHHHHHHHHH",
-  "HHHSSSSSSSSHHH",
-  "HHSSSSSSSSSSHH",
-  "HSSSSSSSSSSSSH",
-  "HSSWPSSSSWPSSH",
-  "HSSWPSSSSWPSSH",
-  "HSSSSSSSSSSSSH",
-  "HSSSSSNNSSSSSH",
-  "HSSSSSSSSSSSSH",
-  ".SSSMMMMMMSSS.",
-  ".SSSSMMMMSSSS.",
-  "..SSSSSSSSSS..",
-  "...SSSSSSSS...",
-  ".....SSSS.....",
-];
-
-const PIX = {
-  H: "#2e1c12", S: "#e9b98b", W: "#ffffff",
-  P: "#101010", N: "#c99468", M: "#7d3030",
+// 5x7 bitmap font, only the glyphs HACK THE PLANET needs. Drawn as blocks
+// so it stays genuinely pixelated at any scale, which canvas text would not.
+const FONT5x7 = {
+  H: ["#...#", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
+  A: [".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
+  C: [".####", "#....", "#....", "#....", "#....", "#....", ".####"],
+  K: ["#...#", "#..#.", "#.#..", "##...", "#.#..", "#..#.", "#...#"],
+  T: ["#####", "..#..", "..#..", "..#..", "..#..", "..#..", "..#.."],
+  E: ["#####", "#....", "#....", "####.", "#....", "#....", "#####"],
+  P: ["####.", "#...#", "#...#", "####.", "#....", "#....", "#...."],
+  L: ["#....", "#....", "#....", "#....", "#....", "#....", "#####"],
+  N: ["#...#", "##..#", "#.#.#", "#.#.#", "#..##", "#...#", "#...#"],
+  " ": ["     ", "     ", "     ", "     ", "     ", "     ", "     "],
 };
 
-function drawJoey(ctx, x, y, s, hueShift) {
-  if (hueShift) { ctx.save(); ctx.filter = `hue-rotate(${hueShift}deg)`; }
-  for (let r = 0; r < JOEY_PIXELS.length; r++) {
-    const row = JOEY_PIXELS[r];
-    for (let c = 0; c < row.length; c++) {
-      const k = row[c];
-      if (k === ".") continue;
-      ctx.fillStyle = PIX[k];
-      ctx.fillRect(x + c * s, y + r * s, s, s);
+const BOUNCE_LINES = ["HACK THE", "PLANET"];
+const GLYPH_W = 6;   // 5 wide plus one column of spacing
+const GLYPH_H = 8;   // 7 tall plus one row of spacing
+
+function bounceBlockSize() {
+  const cols = Math.max.apply(null, BOUNCE_LINES.map((l) => l.length));
+  return { cols: cols * GLYPH_W - 1, rows: BOUNCE_LINES.length * GLYPH_H - 1 };
+}
+
+function drawPixelText(ctx, lines, x, y, s, colour) {
+  ctx.fillStyle = colour;
+  const cols = Math.max.apply(null, lines.map((l) => l.length));
+  lines.forEach((line, li) => {
+    // Centre each line within the block.
+    const offset = Math.floor((cols - line.length) * GLYPH_W / 2);
+    for (let ci = 0; ci < line.length; ci++) {
+      const glyph = FONT5x7[line[ci]];
+      if (!glyph) continue;
+      for (let r = 0; r < glyph.length; r++) {
+        for (let c = 0; c < glyph[r].length; c++) {
+          if (glyph[r][c] !== "#") continue;
+          ctx.fillRect(
+            x + offset + (ci * GLYPH_W + c) * s,
+            y + (li * GLYPH_H + r) * s,
+            s, s
+          );
+        }
+      }
     }
-  }
-  if (hueShift) ctx.restore();
+  });
 }
 
 /* --- saver 1: starfield --- */
@@ -275,14 +282,15 @@ function saverStarfield(ctx, c) {
   };
 }
 
-/* --- saver 2: bouncing Joey, DVD-logo rules --- */
+/* --- saver 2: HACK THE PLANET, DVD-logo rules --- */
 function saverBounce(ctx, c) {
-  const s = Math.max(3, Math.round(Math.min(c.width, c.height) / 110));
-  const w = JOEY_PIXELS[0].length * s;
-  const h = JOEY_PIXELS.length * s;
-  let x = Math.random() * (c.width - w);
-  let y = Math.random() * (c.height - h);
-  let vx = 2.2, vy = 1.7, hue = 0, corners = 0;
+  const block = bounceBlockSize();
+  const s = Math.max(3, Math.round(Math.min(c.width, c.height) / 150));
+  const w = block.cols * s;
+  const h = block.rows * s;
+  let x = Math.random() * Math.max(1, c.width - w);
+  let y = Math.random() * Math.max(1, c.height - h);
+  let vx = 2.2, vy = 1.7, hue = 110, corners = 0;
 
   return () => {
     ctx.fillStyle = "#000";
@@ -298,7 +306,7 @@ function saverBounce(ctx, c) {
     // The thing everyone waits their whole life to see.
     if (hitX && hitY) corners++;
 
-    drawJoey(ctx, x, y, s, hue);
+    drawPixelText(ctx, BOUNCE_LINES, x, y, s, `hsl(${hue}, 100%, 62%)`);
 
     ctx.font = "12px 'Courier New', monospace";
     ctx.fillStyle = "#1c8c1c";
@@ -338,13 +346,17 @@ function saverFloppies(ctx, c) {
     ctx.lineTo(px + d * 1.9, py + d * 0.3 - lift);
     ctx.lineTo(px + d * 1.2, py + d * 0.55);
     ctx.closePath(); ctx.fill();
-    // body
-    ctx.fillStyle = "#1a1a2e";
+    // Body in the yellow of the disk from the film.
+    ctx.fillStyle = "#e8c22a";
     ctx.fillRect(px, py, d, d);
-    ctx.fillStyle = "#c0c0c0";
-    ctx.fillRect(px + d * 0.28, py, d * 0.44, d * 0.42);   // shutter
-    ctx.fillStyle = "#e8e8e8";
-    ctx.fillRect(px + d * 0.16, py + d * 0.58, d * 0.68, d * 0.34); // label
+    ctx.fillStyle = "#a8860f";                                       // shaded lip
+    ctx.fillRect(px, py + d * 0.9, d, d * 0.1);
+    ctx.fillStyle = "#b6b6bd";
+    ctx.fillRect(px + d * 0.28, py, d * 0.44, d * 0.4);              // shutter
+    ctx.fillStyle = "#8e8e96";
+    ctx.fillRect(px + d * 0.28, py, d * 0.1, d * 0.4);               // shutter notch
+    ctx.fillStyle = "#f6f4ea";
+    ctx.fillRect(px + d * 0.14, py + d * 0.54, d * 0.72, d * 0.32);  // label
   }
 
   return () => {
@@ -395,11 +407,17 @@ function saverMystify(ctx, c) {
 
 const SAVERS = [saverStarfield, saverBounce, saverFloppies, saverMystify];
 
-function nextSaverIndex() {
-  let n = parseInt(localStorage.getItem("fj_saver") || "0", 10);
-  if (!Number.isFinite(n) || n < 0) n = 0;
-  localStorage.setItem("fj_saver", String((n + 1) % SAVERS.length));
-  return n % SAVERS.length;
+// Random, but never the same one twice running. Pure random repeats often
+// enough that it reads as the rotation being broken. Stores what was just
+// shown, so the rule survives a page load.
+function pickSaverIndex() {
+  const last = parseInt(localStorage.getItem("fj_saver") || "-1", 10);
+  let n = Math.floor(Math.random() * SAVERS.length);
+  for (let guard = 0; n === last && guard < 8; guard++) {
+    n = Math.floor(Math.random() * SAVERS.length);
+  }
+  localStorage.setItem("fj_saver", String(n));
+  return n;
 }
 
 function startSaver() {
@@ -413,7 +431,7 @@ function startSaver() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const step = SAVERS[nextSaverIndex()](ctx, canvas);
+  const step = SAVERS[pickSaverIndex()](ctx, canvas);
   const loop = () => { step(); saverRAF = requestAnimationFrame(loop); };
   loop();
 }
