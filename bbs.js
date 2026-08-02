@@ -35,7 +35,7 @@ const FILES = {
     "STATUS    : IN CUSTODY. U.S. Secret Service.",
     "CHARGES   : not announced",
     "RELEASED  : no date given",
-    "EQUIPMENT : seized",
+    "EQUIPMENT : one computer, named Lucy. Seized.",
     "SKILL     : contested",
     "NERVE     : underrated",
     "NOTE      : Downloaded the garbage file that broke the whole case",
@@ -59,8 +59,23 @@ const FILES = {
     "Beautiful machine. Genuinely. You should see the way the",
     "filesystem renders. Nobody talks about that part because",
     "everyone is too busy talking about the part where a kid",
-    "downloaded a junk file off it and lost his whole life for",
-    "eighteen days.",
+    "pulled a junk file off it and lost everything he owned",
+    "before breakfast.",
+  ],
+  "GILL.NFO": [
+    "NAME      : Richard Gill",
+    "TITLE     : Special Agent, U.S. Secret Service",
+    "ROLE      : ran the raid personally",
+    "STATEMENT : none given, ever",
+    "",
+    "Took a kid's computer out of a bedroom before sunrise and has",
+    "not, to this day, explained what he thought was on it.",
+    "",
+    "Shortly afterwards his credit rating collapsed, a personal",
+    "advertisement ran in his name, and a federal database briefly",
+    "recorded him as deceased. This board keeps no records of who",
+    "arranged that and has never been in a position to arrange",
+    "anything.",
   ],
   "LEGAL.TXT": [
     "LEGAL DEFENSE FUND",
@@ -161,7 +176,7 @@ const COMMANDS = {
     const hops = [
       "  1   <1 ms   ELLINGSON MINERAL CO.",
       "  2    4 ms   GARBAGE FILE (UNMONITORED)",
-      "  3   11 ms   UNKNOWN LOGIN, 300 BAUD",
+      "  3   11 ms   UNKNOWN LOGIN, UNLISTED  ",
       "  4   29 ms   LOCAL BBS SCENE (ENTIRE)",
       "  5   61 ms   JOEY",
       "  6  timeout  ACTUAL EMBEZZLER",
@@ -278,6 +293,15 @@ const COMMANDS = {
   },
 
   GIBSON() { COMMANDS.TYPE("GIBSON.NFO"); },
+
+  GILL() {
+    COMMANDS.TYPE("GILL.NFO");
+    writeLines([
+      "This board has one node and no capability. Whatever you are",
+      "considering, we cannot help, and he is a character in a film.",
+      "",
+    ], "warn");
+  },
 
   COOKIE() {
     writeLines([

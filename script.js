@@ -729,7 +729,7 @@ const MENU_DEFS = {
   settings: [
     { label: "Terminal Emulation: ANSI-BBS", disabled: true },
     { label: "Baud Rate: 28800",
-      action: () => say("28800 is as fast as this gets.\n\nJoey had to beg for this. Show some respect.") },
+      action: () => say("28800. This board has never gone faster and has never needed to.\n\nEverything worth reading here is text.") },
     { label: "Local Echo: ON", disabled: true },
     { sep: true },
     { label: "Capture to Disk...",
