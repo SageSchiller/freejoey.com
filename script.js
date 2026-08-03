@@ -1271,6 +1271,63 @@ function runCheckout() {
   step();
 }
 
+/* ---------------- 2600 Hz ---------------- */
+// The bosun whistle that came free in boxes of Cap'n Crunch put out 2600 Hz
+// with one hole covered. That was the exact tone AT&T used in band to mark a
+// long distance trunk as idle, so blowing it down an open call convinced the
+// far end you had hung up while the line stayed yours. A toy, and for a while
+// the most useful object in the country.
+//
+// Kept separate from the modem noises in bbs.js: that file only loads on the
+// board, and both files share global scope there.
+
+let whistleCtx = null;
+
+function blow2600(seconds) {
+  try {
+    whistleCtx = whistleCtx || new (window.AudioContext || window.webkitAudioContext)();
+  } catch {
+    return false;
+  }
+  const ctx = whistleCtx;
+  if (ctx.state === "suspended") ctx.resume();
+
+  const dur = seconds || 1.6;
+  const t = ctx.currentTime + 0.05;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(2600, t);
+
+  // A real whistle does not start or stop instantly, and a square edge on a
+  // 2600 Hz sine is a genuinely unpleasant click.
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(0.05, t + 0.06);
+  gain.gain.setValueAtTime(0.05, t + dur - 0.1);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + dur + 0.02);
+  return true;
+}
+
+function initWhistle() {
+  const btn = document.getElementById("whistle-btn");
+  if (!btn) return;
+  const note = document.getElementById("whistle-note");
+  btn.addEventListener("click", () => {
+    const ok = blow2600(1.6);
+    if (!note) return;
+    note.textContent = ok
+      ? "2600 Hz. In 1972 that was a free call to anywhere."
+      : "Your browser declined to make the noise.";
+    btn.disabled = true;
+    setTimeout(() => { btn.disabled = false; }, 1800);
+  });
+}
+
 function initStore() {
   const buttons = document.querySelectorAll("button[data-id]");
   if (!buttons.length) return;
@@ -1397,6 +1454,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPetition();
   initMenus();
   initStore();
+  initWhistle();
   initRedactions();
   initPasswordTerminal();
   runBoot();

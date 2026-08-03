@@ -19,15 +19,19 @@ function writeLines(lines, cls) {
   write(open + lines.map(esc).join("\n") + close);
 }
 
-// Same as writeLines, but turns Phrack citations into working links. The
-// pattern is deliberately narrow: it runs over already-escaped text, and
-// these URLs contain nothing esc() rewrites, so nothing can be smuggled in.
-const PHRACK_URL = /https:\/\/phrack\.org\/issues\/\d+\/\d+/g;
+// Same as writeLines, but turns citations into working links. The pattern is
+// an explicit allowlist of exact URLs rather than anything resembling a URL
+// matcher: it runs over already-escaped text, and none of these contain a
+// character esc() rewrites, so nothing can be smuggled through it.
+// textfiles.com serves no TLS at all, so its entry is http on purpose. A top
+// level cross origin navigation is not mixed content and is not upgraded by
+// the upgrade-insecure-requests directive, so the link works as written.
+const CITED_URL = /(?:https:\/\/(?:phrack\.org\/issues\/\d+\/\d+|www\.eff\.org)|http:\/\/textfiles\.com)/g;
 
 function writeCited(lines, cls) {
   const open = cls ? `<span class="${cls}">` : "";
   const close = cls ? "</span>" : "";
-  const body = lines.map(esc).join("\n").replace(PHRACK_URL, (u) =>
+  const body = lines.map(esc).join("\n").replace(CITED_URL, (u) =>
     `<a class="ext" href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
   write(open + body + close);
 }
@@ -42,6 +46,11 @@ const FILES = {
     "fictional teenager from a 1995 movie deserved better. That is the",
     "entire charter. There is no warez here. There is no carding here.",
     "There is a lot of opinion here.",
+    "",
+    "Boards like this one did not get archived. The sysop went to",
+    "college, the line got cancelled, and everything anybody ever",
+    "typed on it went with it. Somebody went and saved what was",
+    "left of the rest: http://textfiles.com",
   ],
   "JOEY.NFO": [
     "HANDLE    : none, and it ate him up",
@@ -116,6 +125,21 @@ const FILES = {
     "",
     "The fund was announced before it was opened, which is the",
     "order in which most things happened around here.",
+    "",
+    "------------------------------------------------------------",
+    "",
+    "There is a real one, and it is not a joke.",
+    "",
+    "In 1990 federal agents seized the computers of people who had",
+    "not done anything. One of them was a games publisher who lost",
+    "his business for months over a manuscript. The people it",
+    "happened to went and founded an organisation to make sure",
+    "somebody turned up next time, because nobody had turned up",
+    "for them.",
+    "",
+    "  https://www.eff.org",
+    "",
+    "That fund has a balance. This one does not.",
   ],
   "PHRACK.TXT": [
     "                    == THE CONSCIENCE OF A NOOB ==",
@@ -958,6 +982,66 @@ const COMMANDS = {
     if (!FILES[key]) { writeLines([`File not found: ${arg}`], "warn"); return; }
     writeCited([""].concat(FILES[key]).concat([""]));
   },
+
+  // Not in HELP. The board runs on a phone line and the King of NYNEX is in
+  // custody, so the tone that used to own that line belongs on it somewhere.
+  "2600"() {
+    writeLines(["", "Pursing lips.", ""], "dim");
+    const ok = typeof blow2600 === "function" && blow2600(1.6);
+    if (!ok) {
+      writeLines(["Your browser declined to make the noise.", ""], "warn");
+      return;
+    }
+    writeCited([
+      "",
+      "2600 Hz.",
+      "",
+      "That was the tone AT&T put on a long distance trunk to say",
+      "the line was idle. Blow it down an open call and the far end",
+      "believed you had hung up. The line stayed open. It was yours,",
+      "and it went anywhere you asked it to.",
+      "",
+      "It came free in a box of Cap'n Crunch. A plastic bosun",
+      "whistle, one hole covered, dead on 2600. A man took his",
+      "handle from the cereal. Somebody else could do it by mouth.",
+      "",
+      "The phone company spent years and a great deal of money",
+      "moving its signalling somewhere a child could not whistle at",
+      "it. This does nothing now. Blow it anyway.",
+      "",
+    ], "amber");
+  },
+
+  WHISTLE(arg) { COMMANDS["2600"](arg); },
+
+  // Not in HELP either. The board is a forgery. That one is the real thing.
+  TEXTFILES() {
+    writeCited([
+      "",
+      "THE ARCHIVE",
+      "===========",
+      "",
+      "Every board like this one went dark, and almost none of it",
+      "was written down anywhere else. Philes, g-philes, ANSI art,",
+      "flame wars, door games, and an enormous quantity of nonsense",
+      "typed by teenagers at two in the morning.",
+      "",
+      "Somebody spent years pulling what survived off dying disks",
+      "and put it somewhere it cannot be switched off:",
+      "",
+      "  http://textfiles.com",
+      "",
+      "Still no padlock on it after thirty years, which is either",
+      "an oversight or the single most consistent thing on the",
+      "internet.",
+      "",
+      "This board is a forgery of something that was real. That is",
+      "the real one. Go and read an actual one.",
+      "",
+    ], "amber");
+  },
+
+  ARCHIVE(arg) { COMMANDS.TEXTFILES(arg); },
 
   // Not in HELP. PHRACK.TXT says the board should not have the newer one,
   // which is the whole hook: this entry postdates the board by thirty years
