@@ -1299,6 +1299,98 @@ function initStore() {
   if (cartCount(loadCart())) showCart(false);
 }
 
+/* ---------------- case file: redactions and the sealed entry ---------------- */
+// The exhibits carry blacked-out fields. Clearing all of them reveals LOG
+// 000, which is the only sincere thing on the page.
+
+function initRedactions() {
+  const marks = document.querySelectorAll(".redact[data-under]");
+  if (!marks.length) return;
+  const sealed = document.getElementById("sealed");
+
+  const check = () => {
+    if (!sealed) return;
+    const left = document.querySelectorAll(".redact[data-under]:not(.open)").length;
+    if (left === 0 && sealed.style.display === "none") {
+      sealed.style.display = "";
+      sealed.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
+  marks.forEach((m) => {
+    const open = () => {
+      if (m.classList.contains("open")) return;
+      m.classList.add("open");
+      m.textContent = m.dataset.under;
+      m.removeAttribute("role");
+      m.removeAttribute("tabindex");
+      setTimeout(check, 400);
+    };
+    m.addEventListener("click", open);
+    m.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+    });
+  });
+}
+
+/* ---------------- case file: the Ellingson terminal ---------------- */
+// Belford's own line about the four most common passwords, turned into a
+// lock that those four passwords open.
+
+const COMMON_FOUR = ["love", "sex", "secret", "god"];
+
+function initPasswordTerminal() {
+  const input = document.getElementById("pw-input");
+  const go = document.getElementById("pw-go");
+  const out = document.getElementById("pw-out");
+  if (!input || !out) return;
+
+  const found = new Set();
+
+  const say = (html) => {
+    out.insertAdjacentHTML("beforeend", "\n" + html);
+    out.scrollTop = out.scrollHeight;
+  };
+
+  function attempt() {
+    const raw = input.value.trim();
+    if (!raw) return;
+    const guess = raw.toLowerCase();
+    input.value = "";
+    say('<span class="dim">password: ' + "*".repeat(Math.min(raw.length, 16)) + "</span>");
+
+    if (COMMON_FOUR.indexOf(guess) > -1) {
+      found.add(guess);
+      say('<span class="ok">ACCESS GRANTED</span>');
+      say('<span class="amber">Welcome to the Ellingson Mineral Company mainframe.</span>');
+      if (found.size < COMMON_FOUR.length) {
+        const left = COMMON_FOUR.length - found.size;
+        say('<span class="dim">' + found.size + " of 4 accepted. " +
+            left + (left === 1 ? " more like it." : " more like it.") + "</span>");
+      } else {
+        say("");
+        say('<span class="amber">All four. Love, sex, secret, god.</span>');
+        say('<span class="dim">Their head of security knows this. He said it out loud,</span>');
+        say('<span class="dim">to a room, as a joke. Nobody made him change anything.</span>');
+        say("");
+        say('<span class="warn">This is the company whose break-in cost a kid his computer.</span>');
+      }
+    } else if (guess === "joey" || guess === "lucy") {
+      say('<span class="warn">ACCESS DENIED</span>');
+      say('<span class="dim">Sentimental. Not a password anyone at this company would pick.</span>');
+    } else if (guess === "hackers" || guess === "gibson" || guess === "plague") {
+      say('<span class="warn">ACCESS DENIED</span>');
+      say('<span class="dim">Warmer. Still not how these people think.</span>');
+    } else {
+      say('<span class="warn">ACCESS DENIED</span>');
+      say('<span class="dim">Try something a person would actually choose. There are four.</span>');
+    }
+  }
+
+  if (go) go.addEventListener("click", attempt);
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") attempt(); });
+}
+
 /* ---------------- init ---------------- */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1311,6 +1403,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initPetition();
   initMenus();
   initStore();
+  initRedactions();
+  initPasswordTerminal();
   runBoot();
 
   const donateBtn = document.getElementById("donate-btn");
