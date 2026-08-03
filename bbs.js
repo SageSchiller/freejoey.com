@@ -26,7 +26,7 @@ function writeLines(lines, cls) {
 // textfiles.com serves no TLS at all, so its entry is http on purpose. A top
 // level cross origin navigation is not mixed content and is not upgraded by
 // the upgrade-insecure-requests directive, so the link works as written.
-const CITED_URL = /(?:https:\/\/(?:phrack\.org\/issues\/\d+\/\d+|www\.eff\.org)|http:\/\/textfiles\.com)/g;
+const CITED_URL = /(?:https:\/\/(?:phrack\.org\/issues\/\d+\/\d+|www\.eff\.org)|http:\/\/(?:textfiles\.com|www\.catb\.org\/jargon\/))/g;
 
 function writeCited(lines, cls) {
   const open = cls ? `<span class="${cls}">` : "";
@@ -141,6 +141,47 @@ const FILES = {
     "",
     "That fund has a balance. This one does not.",
   ],
+  "LODMOD.NFO": [
+    "THE WAR",
+    "=======",
+    "",
+    "Before any of this, two crews spent about two years taking",
+    "each other apart. It is worth knowing about, because one of",
+    "them was from here.",
+    "",
+    "LEGION OF DOOM. Started 1984. National, loose, and by the end",
+    "of the decade the most written about crew in the country. The",
+    "Mentor was one of them, which is why PHRACK.TXT reads the way",
+    "it does.",
+    "",
+    "MASTERS OF DECEPTION. Started 1989, New York, and the name is",
+    "a straight shot at the other lot. Phiber Optik had been in",
+    "LOD and then was not. He and Acid Phreak built MOD out of kids",
+    "who knew the New York switches better than the people being",
+    "paid to run them.",
+    "",
+    "That is the part worth saying twice. MOD were NYNEX kids. They",
+    "lived inside the same network Phreak calls his own, and they",
+    "were better at it than anybody was comfortable with.",
+    "",
+    "What the war actually consisted of: lines cut, each other's",
+    "machines taken, conference calls hijacked, and an enormous",
+    "amount of shouting. Some of it was funny. Some of it was two",
+    "teenagers disconnecting a man's home telephone for a month.",
+    "",
+    "How it ended: a federal grand jury in Manhattan, July 1992.",
+    "The war stopped being a war the moment it became an exhibit.",
+    "Phiber Optik got a year and a day.",
+    "",
+    "NOBODY WON. That is not a moral, it is the outcome. Both crews",
+    "ended up in front of the same kind of judge a couple of years",
+    "apart. Being on the winning side of the feud turned out not to",
+    "be a category that existed.",
+    "",
+    "Somebody wrote a whole book about it while it was still going",
+    "on. Ask an adult who was there. They will have opinions and",
+    "about half of them will be wrong.",
+  ],
   "PHRACK.TXT": [
     "                    == THE CONSCIENCE OF A NOOB ==",
     "",
@@ -159,6 +200,98 @@ const FILES = {
     "  https://phrack.org/issues/7/3",
     "",
     "There is a newer one. This board should not have it.",
+  ],
+};
+
+/* ---------------- the jargon file, abridged ---------------- */
+// Definitions are written here rather than copied. The real file has roughly
+// two thousand entries and a great deal of argument attached to each one.
+
+const JARGON_FILE = {
+  HACK: [
+    "The original sense: a clever solution nobody expected, arrived",
+    "at by somebody who understood the system better than its",
+    "designers. The real file spends several paragraphs refusing to",
+    "settle on one meaning, which is itself the answer.",
+  ],
+  HACKER: [
+    "Someone who enjoys taking things apart to find out how they",
+    "work. The file has argued since the 1970s that the press took",
+    "this word and used it to mean the other thing. The press won.",
+    "The file is still arguing.",
+  ],
+  CRACKER: [
+    "The word the file wanted the press to use for people who break",
+    "in to cause harm. It never caught on with anybody outside the",
+    "file.",
+  ],
+  PHREAKING: [
+    "Doing to the telephone network what hacking does to computers.",
+    "Predates it by a decade and change. See also: 2600.",
+  ],
+  KLUDGE: [
+    "Pronounced klooj. A solution that works, should not, and now",
+    "cannot be removed because three other things depend on it.",
+  ],
+  CRUFT: [
+    "Accumulated residue in a system. Files, code, and settings that",
+    "nobody can account for and nobody dares delete.",
+  ],
+  BOGON: [
+    "The hypothetical elementary particle of wrongness. Emitted by",
+    "broken code, bad documentation, and certain people. Measured",
+    "in bogosity.",
+  ],
+  "BIT ROT": [
+    "The observed tendency of a program to stop working over time",
+    "despite nobody having touched it. Officially impossible.",
+    "Universally experienced.",
+  ],
+  LUSER: [
+    "A user, said with feeling. Blend of loser and user, and the",
+    "person who coined it was having a bad shift.",
+  ],
+  RTFM: [
+    "Read the manual. The F is not optional and is doing most of",
+    "the work.",
+  ],
+  GROK: [
+    "To understand a thing so completely that you have stopped",
+    "having to think about it. Borrowed from a Heinlein novel in",
+    "1961 and never given back.",
+  ],
+  FOO: [
+    "The universal placeholder. When an example needs a name and the",
+    "name does not matter, it is foo, then bar, then baz. Nobody",
+    "agrees where it came from and everybody has a theory.",
+  ],
+  WETWARE: [
+    "The human being operating the machine. Slower than the",
+    "hardware, harder to patch, and the component that gets social",
+    "engineered.",
+  ],
+  FLAME: [
+    "To post at length, in anger, and at a volume out of all",
+    "proportion to the disagreement. A sustained exchange is a flame",
+    "war. This board has hosted several.",
+  ],
+  LURKER: [
+    "Somebody who reads everything and posts nothing. Most of any",
+    "board is lurkers. They are not the problem.",
+  ],
+  MUNGE: [
+    "To transform data, usually destructively, usually while trying",
+    "to do something else.",
+  ],
+  WIZARD: [
+    "Somebody who genuinely knows how the thing works, as opposed to",
+    "somebody who knows which commands to type. The difference shows",
+    "up the moment anything breaks.",
+  ],
+  HEISENBUG: [
+    "A bug that changes behaviour or disappears entirely as soon as",
+    "you try to observe it. Related: the Bohr bug, which is the",
+    "honest kind that shows up every time.",
   ],
 };
 
@@ -905,6 +1038,7 @@ const COMMANDS = {
       "  WHO             Who else is online right now.",
       "  FINGER <user>   Look up a user. Two of them are worth looking up.",
       "  TRACE           Run a traceroute on the blame.",
+      "  JARGON <word>   Look a word up. JARGON on its own lists them.",
       "  SYSOP           Page the system operator.",
       "  DONATE          Contribute to the cause.",
       "  DATE            Current system date and time.",
@@ -981,6 +1115,41 @@ const COMMANDS = {
     const key = arg.toUpperCase();
     if (!FILES[key]) { writeLines([`File not found: ${arg}`], "warn"); return; }
     writeCited([""].concat(FILES[key]).concat([""]));
+  },
+
+  JARGON(arg) {
+    const keys = Object.keys(JARGON_FILE);
+    if (!arg) {
+      writeLines(["", "JARGON.DAT  " + keys.length + " entries loaded", ""], "amber");
+      for (let i = 0; i < keys.length; i += 3) {
+        write(esc("  " + keys.slice(i, i + 3).map((k) => k.padEnd(14)).join("")));
+      }
+      writeCited([
+        "",
+        "Usage: JARGON <word>",
+        "",
+        "The real file has about two thousand of these and an",
+        "argument attached to every one:",
+        "",
+        "  http://www.catb.org/jargon/",
+        "",
+      ], "dim");
+      return;
+    }
+    const key = arg.trim().toUpperCase();
+    if (!JARGON_FILE[key]) {
+      writeCited([
+        "",
+        "No entry for " + key + ".",
+        "",
+        "This board carries " + keys.length + " of them. The real file",
+        "carries about two thousand: http://www.catb.org/jargon/",
+        "",
+      ], "warn");
+      return;
+    }
+    writeLines(["", key], "amber");
+    writeLines(JARGON_FILE[key].map((l) => "  " + l).concat([""]));
   },
 
   // Not in HELP. The board runs on a phone line and the King of NYNEX is in
