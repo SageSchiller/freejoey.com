@@ -141,6 +141,74 @@ const FILES = {
     "",
     "That fund has a balance. This one does not.",
   ],
+  "BOOKS.TXT": [
+    "THE COLOUR BOOKS",
+    "================",
+    "",
+    "Two completely different traditions, both named after their",
+    "covers, permanently confused for one another. This board would",
+    "like to clear that up and will probably fail.",
+    "",
+    "",
+    "THE RAINBOW SERIES",
+    "------------------",
+    "Real United States government publications, issued by the",
+    "Department of Defense and the National Computer Security",
+    "Center through the eighties. Named for the colour of the cover",
+    "because nobody was ever going to remember the document",
+    "numbers. They were free if you wrote in and asked for them.",
+    "",
+    "  ORANGE BOOK    Trusted Computer System Evaluation Criteria.",
+    "                 DoD 5200.28-STD, 1985. The famous one. It",
+    "                 defines the ratings, D through A1, and it is",
+    "                 the reason anybody has ever said the words",
+    "                 \"C2 compliant\" out loud in a meeting.",
+    "",
+    "  RED BOOK       The Trusted Network Interpretation, 1987.",
+    "                 The Orange Book applied to networks, which",
+    "                 turned out to be very much harder than",
+    "                 applying it to one machine in one room.",
+    "",
+    "  GREEN BOOK     The Password Management Guideline, 1985. An",
+    "                 entire government standard about choosing a",
+    "                 password. Ellingson's head of security has",
+    "                 evidently not read it. Neither has anybody",
+    "                 else. See the terminal on the EVIDENCE page.",
+    "",
+    "There are dozens more, in colours the printer clearly selected",
+    "under duress.",
+    "",
+    "",
+    "THE ONES NAMED AFTER THEIR COVERS",
+    "---------------------------------",
+    "Not government anything. Textbooks that picked up nicknames",
+    "from the picture on the front, and the nickname stuck harder",
+    "than the actual title ever did.",
+    "",
+    "  DRAGON BOOK    Compilers: Principles, Techniques and Tools.",
+    "                 Aho, Sethi and Ullman. A knight with a sword",
+    "                 marked LALR PARSER GENERATOR, fighting a",
+    "                 dragon marked COMPLEXITY OF COMPILER DESIGN.",
+    "                 Editions are told apart by the colour of the",
+    "                 dragon.",
+    "",
+    "  DEVIL BOOK     The Design and Implementation of the 4.3BSD",
+    "                 UNIX Operating System. The thing on the cover",
+    "                 is the BSD daemon, which is a pun about the",
+    "                 sort of program that waits in the background",
+    "                 and is not a theological position.",
+    "",
+    "  PINK-SHIRT     The Peter Norton Programmer's Guide to the",
+    "  BOOK           IBM PC. Norton on the front, arms folded,",
+    "                 sleeves rolled up, in a pink shirt. The book",
+    "                 is genuinely excellent. Nobody alive has ever",
+    "                 called it by its title.",
+    "",
+    "Also in circulation: the WIZARD BOOK (Abelson and Sussman),",
+    "the CAMEL BOOK (Perl), the CINDERELLA BOOK (operating",
+    "systems), and the WHITE BOOK, which is Kernighan and Ritchie",
+    "and never needed a picture at all.",
+  ],
   "LODMOD.NFO": [
     "THE WAR",
     "=======",
@@ -292,6 +360,110 @@ const JARGON_FILE = {
     "A bug that changes behaviour or disappears entirely as soon as",
     "you try to observe it. Related: the Bohr bug, which is the",
     "honest kind that shows up every time.",
+  ],
+  "SALAMI ATTACK": [
+    "Theft by slicing. Take a fraction of a cent off an enormous",
+    "number of transactions and the total is a fortune while no",
+    "single line on any statement looks wrong. Named for the only",
+    "sensible way to eat a salami.",
+    "See also: the entire reason this board exists.",
+  ],
+  WORM: [
+    "A program that moves through a network on its own. A virus",
+    "needs something to attach itself to. A worm does not, which is",
+    "the whole distinction and it gets ignored constantly.",
+  ],
+  VIRUS: [
+    "Code that copies itself into other programs and travels when",
+    "they do. Needs a host. See WORM for the thing it keeps getting",
+    "confused with.",
+  ],
+  "TROJAN HORSE": [
+    "A program that does exactly what it advertises, and also does",
+    "something else. The advertised part is what gets it installed.",
+  ],
+  "BACK DOOR": [
+    "A way in that the designer left deliberately and mentioned to",
+    "nobody. Also trapdoor. Distinct from a bug in that somebody",
+    "meant it.",
+  ],
+  "SOCIAL ENGINEERING": [
+    "Getting what you want by asking a person instead of attacking a",
+    "machine. The oldest technique, the cheapest, and the only one",
+    "no patch has ever addressed. See WETWARE.",
+  ],
+  SNEAKERNET: [
+    "Moving data by picking it up and walking. Enormous bandwidth,",
+    "dreadful latency, and completely impossible to wiretap.",
+    "Occasionally the only thing that still works.",
+  ],
+  HANDLE: [
+    "The name you are known by. The convention is that you do not",
+    "choose your own, and everybody who has tried has had to live",
+    "with the result.",
+  ],
+  DAEMON: [
+    "A program that sits in the background waiting for something to",
+    "happen. Not spelled demon, and people will correct you.",
+  ],
+  "CORE DUMP": [
+    "A copy of memory written out when a program dies, so somebody",
+    "can work out what it was thinking. Also used of a person who",
+    "answers a small question at catastrophic length.",
+  ],
+  MAGIC: [
+    "A feature that works for reasons nobody present can explain,",
+    "occasionally including its author. Escalates to deep magic, and",
+    "then to more magic, which was a real label somebody at MIT put",
+    "on a switch nobody could account for.",
+  ],
+  FROB: [
+    "To adjust something aimlessly. The gradations matter: frobbing",
+    "is random, twiddling is a small deliberate change, and tweaking",
+    "is a careful one. People will die on this hill.",
+  ],
+  SNARF: [
+    "To grab a copy of something, usually the whole thing, usually",
+    "without having asked first.",
+  ],
+  DWIM: [
+    "Do What I Mean. A system that tries to work out your intention",
+    "and fix your input for you. Adored when it guesses right and",
+    "unbearable the rest of the time.",
+  ],
+  CANONICAL: [
+    "The standard, approved, correct form of a thing. Borrowed from",
+    "mathematics and now used far more heavily by hackers than by",
+    "the people who invented the sense.",
+  ],
+  MOBY: [
+    "Large. Immense. Originally MIT, originally about address space,",
+    "and originally about a whale.",
+  ],
+  RANDOM: [
+    "Not the statistical sense. Assorted, unmotivated, or simply",
+    "wrong. A random person is somebody with no business being",
+    "there.",
+  ],
+  CHAD: [
+    "The confetti punched out of cards and paper tape. Clearing it",
+    "out was somebody's actual job.",
+  ],
+  UTSL: [
+    "Use the Source, Luke. The answer is in the code, the code is",
+    "right there, and you are capable of reading it.",
+  ],
+  "HACK VALUE": [
+    "The reason for doing something completely pointless extremely",
+    "well. It accounts for most of what is on this board and very",
+    "nearly all of the good parts of the field.",
+  ],
+  "THE STORY OF MEL": [
+    "A legend posted in 1983 about a programmer who timed his code",
+    "to the physical rotation of a drum memory so each instruction",
+    "arrived exactly when the drum did, and who refused to rig a",
+    "game in the house's favour because it would be dishonest.",
+    "Usually passed around set as free verse.",
   ],
 };
 
@@ -1121,8 +1293,11 @@ const COMMANDS = {
     const keys = Object.keys(JARGON_FILE);
     if (!arg) {
       writeLines(["", "JARGON.DAT  " + keys.length + " entries loaded", ""], "amber");
+      // Column width comes from the longest key, so adding an entry cannot
+      // quietly break the alignment of the whole listing.
+      const w = Math.max.apply(null, keys.map((k) => k.length)) + 2;
       for (let i = 0; i < keys.length; i += 3) {
-        write(esc("  " + keys.slice(i, i + 3).map((k) => k.padEnd(14)).join("")));
+        write(esc(("  " + keys.slice(i, i + 3).map((k) => k.padEnd(w)).join("")).replace(/\s+$/, "")));
       }
       writeCited([
         "",
