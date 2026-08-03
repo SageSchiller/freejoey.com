@@ -1272,8 +1272,11 @@ function runCheckout() {
       "Not because there is no store, although there is no store,",
       "but because nothing on this call is being billed to anybody.",
       "",
-      "This stopped working in the early eighties. Please do not",
-      "write in about it."
+      "A tone could do that because the signalling shared a wire with",
+      "the conversation, so anything you could hear, you could also",
+      "talk back to. The phone company moved the signalling onto its",
+      "own channel and that was the end of it. This is a joke and not",
+      "a method."
     );
   } else {
     lines.push(
