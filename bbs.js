@@ -682,6 +682,195 @@ const FILES = {
   ],
 };
 
+/* ---------------- who is on, and what they will tell you ---------------- */
+// WHO and FINGER read the same table, so the board cannot list somebody on a
+// node and then claim no such user when you look them up.
+
+const USERS = [
+  {
+    node: 1, handle: "YOU", action: "reading this",
+    finger: [
+      "Login: you                    Name: not on file",
+      "Handle: none supplied",
+      "On since: whenever you got here",
+      "",
+      "Plan:",
+      "  Fingering yourself from the node you are sitting on is",
+      "  the oldest move on any board and it has never once",
+      "  returned anything useful.",
+    ],
+  },
+  {
+    node: 2, handle: "CerealKiller", action: "eating something unidentifiable",
+    aliases: ["CEREAL", "CEREALKILLER"],
+    finger: [
+      "Login: cereal                 Name: Emmanuel Goldstein",
+      "Handle: Cereal Killer",
+      "On since: unclear. He does not log off, he wanders away.",
+      "",
+      "Plan:",
+      "  Everything is a conspiracy until somebody proves it is",
+      "  just incompetence, and incompetence has never once been",
+      "  proven to my satisfaction.",
+      "",
+      "  Yes it is the same name as the man who edits the",
+      "  magazine. No, that is not an accident either. See",
+      "  2600.NFO.",
+      "",
+      "  Do not throw away anything with writing on it. Bring it",
+      "  to me. See JARGON DUMPSTER DIVING.",
+    ],
+  },
+  {
+    node: 3, handle: "LordNikon", action: "memorizing your password over your shoulder",
+    aliases: ["NIKON", "LORDNIKON"],
+    finger: [
+      "Login: nikon                  Name: Paul Cook",
+      "Handle: Lord Nikon",
+      "On since: he was here before you and he will remember that",
+      "",
+      "Plan:",
+      "  I read it once. That is the entire skill and it is",
+      "  enough.",
+      "",
+      "  I know what you typed to get in here. I was not trying",
+      "  to and I cannot stop. See JARGON SHOULDER SURFING.",
+    ],
+  },
+  {
+    node: 4, handle: "AcidBurn", action: "out-typing everyone, as usual",
+    aliases: ["BURN", "ACIDBURN", "KATE"],
+    finger: [
+      "Login: burn                   Name: withheld, obviously",
+      "Handle: Acid Burn",
+      "On since: earlier than you and still going",
+      "",
+      "Plan:",
+      "  I am the best on this board and it is not close. If you",
+      "  disagree, the machine is right there.",
+      "",
+      "  On the subject of the kid: he took something he could",
+      "  not read off a machine he had no business being on,",
+      "  which was stupid, and then he kept it, which was not.",
+      "  Do not confuse the two.",
+    ],
+  },
+  {
+    node: 5, handle: "CrashOverride", action: "lurking, which is not like him",
+    aliases: ["CRASH", "CRASHOVERRIDE", "ZEROCOOL", "DADE"],
+    finger: [
+      "Login: crash                  Name: Dade Murphy",
+      "Handle: Crash Override",
+      "Former handle: Zero Cool. Do not use it in front of him.",
+      "On since: he does not say and the log does not agree with",
+      "          him about it",
+      "",
+      "Plan:",
+      "  I was eleven. I wrote it. It worked. Fifteen hundred and",
+      "  seven systems in one afternoon and I have never once",
+      "  claimed somebody else did it for me.",
+      "",
+      "  What I got was a fine my mother paid and no keyboard",
+      "  until my eighteenth birthday. Seven years. I turned",
+      "  eighteen this year and the first thing I did was get",
+      "  back on.",
+      "",
+      "  The kid on node 8 did not write anything. He took a file",
+      "  he could not read off a machine he should not have been",
+      "  on. Read those two paragraphs again and then tell me the",
+      "  cases are the same.",
+    ],
+  },
+  {
+    node: 6, handle: "[REDACTED]", action: "definitely not federal law enforcement",
+    aliases: ["REDACTED"],
+    finger: [
+      "Login: [REDACTED]             Name: [REDACTED]",
+      "Handle: [REDACTED]",
+      "On since: [REDACTED]",
+      "Idle: 00:00. Has not been idle once. Not for a second.",
+      "",
+      "Plan:",
+      "  No plan file.",
+      "",
+      "  This account has read every message on this board and",
+      "  posted nothing. It joined the day after the raid. It",
+      "  does not eat, it does not sleep, and it has never once",
+      "  asked a question it did not already know the answer to.",
+      "",
+      "  See JARGON LURKER, and then draw the obvious conclusion.",
+    ],
+  },
+  // Neither of these is online. The board is holding the nodes, which is a
+  // different thing, and both accounts belong to somebody in custody.
+  {
+    node: 7, handle: "PhantomPhreak", action: "no carrier since the 20th",
+    offline: true, since: "the 20th",
+    aliases: ["PHREAK", "PHANTOMPHREAK", "RAMON"], file: "PHREAK.NFO",
+  },
+  {
+    node: 8, handle: "Joey", action: "no carrier since the 16th",
+    offline: true, since: "the 16th",
+    aliases: ["JOEY", "JOEYPARDELLA"], file: "JOEY.NFO",
+  },
+];
+
+// Looked up by name, never on a node here.
+const FINGER_ELSEWHERE = {
+  GILL: { file: "GILL.NFO" },
+  RICHARDGILL: { file: "GILL.NFO" },
+  PLAGUE: { key: "PLAGUE" },
+  THEPLAGUE: { key: "PLAGUE" },
+  BELFORD: { key: "PLAGUE" },
+  EUGENEBELFORD: { key: "PLAGUE" },
+  RAZOR: { key: "RAZORBLADE" },
+  BLADE: { key: "RAZORBLADE" },
+  RAZORANDBLADE: { key: "RAZORBLADE" },
+  RAZORBLADE: { key: "RAZORBLADE" },
+};
+
+const FINGER_TEXT = {
+  PLAGUE: [
+    "No account on this board. There has never been one and there",
+    "is not going to be one.",
+    "",
+    "He has an account at Ellingson Mineral Company. It holds every",
+    "permission the system has to give and he assigned it to",
+    "himself, which is one of the several things nobody has asked",
+    "him about.",
+    "",
+    "See LOG 004 on the EVIDENCE page, and USR/BELFORD.PROFILE if",
+    "you have got that far.",
+  ],
+  RAZORBLADE: [
+    "Login: razor, blade           Name: not supplied, ever",
+    "Handle: Razor and Blade",
+    "Status: not users of this board",
+    "",
+    "Plan:",
+    "  They do not call boards. They broadcast, on a signal that",
+    "  nobody has managed to trace to a transmitter, and they have",
+    "  been doing it for long enough that the not tracing of it",
+    "  has started to look like a decision.",
+    "",
+    "  They sign off the same way every time and you already know",
+    "  how.",
+  ],
+};
+
+function fingerLookup(raw) {
+  // Strip anything decorative so [REDACTED], Cereal Killer and cereal_killer
+  // all land on the same record.
+  const key = raw.replace(/[\s_.\-\[\]]/g, "").toUpperCase();
+  for (const u of USERS) {
+    const names = [u.handle.replace(/[\s\[\]]/g, "").toUpperCase()].concat(u.aliases || []);
+    if (names.indexOf(key) > -1) return u;
+  }
+  const e = FINGER_ELSEWHERE[key];
+  if (e) return e.file ? { file: e.file } : { lines: FINGER_TEXT[e.key] };
+  return null;
+}
+
 /* ---------------- the jargon file, abridged ---------------- */
 // Definitions are written here rather than copied. The real file has roughly
 // two thousand entries and a great deal of argument attached to each one.
@@ -1915,7 +2104,8 @@ const COMMANDS = {
       "  DIR             List files in the message base.",
       "  TYPE <file>     Read a file. Example: TYPE JOEY.NFO",
       "  WHO             Who else is online right now.",
-      "  FINGER <user>   Look up a user. Two of them are worth looking up.",
+      "  FINGER <user>   Look somebody up. Everyone WHO lists, and a",
+      "                  few people it does not.",
       "  TRACE           Run a traceroute on the blame.",
       "  JARGON <word>   Look a word up. JARGON on its own lists them.",
       "  SYSOP           Page the system operator.",
@@ -2128,31 +2318,55 @@ const COMMANDS = {
   },
 
   WHO() {
+    const row = (u) => "    " + u.node + "  " + u.handle.padEnd(18) + u.action;
+    const online = USERS.filter((u) => !u.offline);
+    const held = USERS.filter((u) => u.offline);
+
     writeLines([
       "",
       " NODE  HANDLE            ACTION",
       " ----  ----------------  ----------------------------------",
-      "    1  YOU               reading this",
-      "    2  CerealKiller      eating something unidentifiable",
-      "    3  LordNikon         memorizing your password over your shoulder",
-      "    4  AcidBurn          out-typing everyone, as usual",
-      "    5  [REDACTED]        definitely not federal law enforcement",
-      "    6  PhantomPhreak     -- no carrier, since the 20th --",
+    ].concat(online.map(row)).concat([
       "",
-      " 5 users online. One of them is lying about something.",
-      " Node 6 has been held open. Nobody has asked us to close it.",
+      " " + online.length + " users online. One of them is lying about something.",
       "",
-    ]);
+    ]));
+
+    if (!held.length) return;
+    writeLines([" Held open, and not in that count:"].concat(held.map(row)).concat([""]), "dim");
+    writeLines([
+      " Both accounts belong to somebody in custody. The lines",
+      " dropped and have not come back. The board keeps the nodes",
+      " anyway. Nobody has asked us to close them and nobody here",
+      " intends to be the one who volunteers.",
+      "",
+      " You can still FINGER them. That is what it was for.",
+      "",
+    ], "dim");
   },
 
   FINGER(arg) {
-    const who = (arg || "").toUpperCase();
-    if (who === "JOEY") { writeLines([""].concat(FILES["JOEY.NFO"]).concat([""])); return; }
-    if (who === "PHREAK" || who === "PHANTOMPHREAK" || who === "RAMON") {
-      writeLines([""].concat(FILES["PHREAK.NFO"]).concat([""]));
+    if (!arg || !arg.trim()) {
+      writeLines(["Usage: FINGER <user>   (try WHO first)"], "warn");
       return;
     }
-    writeLines([`No such user: ${arg || "(nobody)"}`], "warn");
+    const u = fingerLookup(arg);
+    if (!u) {
+      writeLines([
+        "No such user: " + arg,
+        "WHO lists everybody this board will admit to.",
+      ], "warn");
+      return;
+    }
+    if (u.offline && u.node) {
+      writeLines([
+        "",
+        "Node " + u.node + ". Last carrier: " + u.since + ". Node still held.",
+        "",
+      ], "dim");
+    }
+    if (u.file) { writeCited([""].concat(FILES[u.file]).concat([""])); return; }
+    writeLines([""].concat(u.lines || u.finger).concat([""]));
   },
 
   TRACE() {
