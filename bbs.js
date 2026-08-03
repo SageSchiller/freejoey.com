@@ -580,9 +580,15 @@ function gibsonStart() {
   const dirs = ["/pub", "/usr", "/payroll", "/tanker", "/sec", "/garbage"];
   // Three fragments, scattered. One is always behind the locked door, so a
   // clean run needs the password from the case file.
-  const pool = dirs.slice().sort(() => Math.random() - 0.5);
-  const spots = [ "/sec" ];
-  for (const d of pool) { if (spots.length < 3 && d !== "/sec") spots.push(d); }
+  // Fisher-Yates. A comparator returning random values is not a shuffle: it
+  // left /pub and /usr holding fragments about half the time while /payroll
+  // and /garbage sat near 31%, so whole directories rarely came up.
+  const pool = dirs.filter((d) => d !== "/sec");
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const spots = ["/sec", pool[0], pool[1]];
 
   GAME = { active: true, cwd: "/", trace: 12, turns: 0, got: [], frags: spots, unlocked: false };
 
@@ -749,7 +755,12 @@ function gibsonCommand(cmd, arg) {
     case "UNLOCK": {
       if (GIBSON_PW.indexOf(a.toLowerCase()) > -1) {
         g.unlocked = true;
-        writeLines(["", "ACCESS GRANTED.", "One of four. He said it out loud to a room and nobody changed it.", ""], "amber");
+        writeLines([
+          "",
+          "ACCESS GRANTED.  /sec is open.",
+          "One of four. He said it out loud to a room and nobody changed it.",
+          "",
+        ], "amber");
       } else {
         writeLines(["Rejected. Think less like a hacker and more like an executive."], "warn");
         if (gibsonTick(2)) gibsonStatus();
