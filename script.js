@@ -312,12 +312,6 @@ function saverBounce(ctx, c) {
     ctx.fillStyle = "#1c8c1c";
     ctx.textAlign = "left";
     ctx.fillText("corner hits: " + corners, 14, c.height - 16);
-    if (corners > 0) {
-      ctx.textAlign = "center";
-      ctx.fillStyle = "#33ff33";
-      ctx.font = "bold 16px 'Courier New', monospace";
-      ctx.fillText("YOU SAW IT HAPPEN", c.width / 2, 34);
-    }
   };
 }
 
