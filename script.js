@@ -1245,12 +1245,47 @@ function runCheckout() {
     "   distance      : undefined",
     "   arrival       : never",
     "",
-    "CONTACTING PAYMENT PROCESSOR......",
-    "   ERROR: no payment processor configured",
-    "   ERROR: no payment processor has ever been configured",
-    "   ERROR: there is no store",
-    "",
-    "ORDER CANCELLED. NO CHARGE. NO CARD WAS ASKED FOR.",
+    "CONTACTING PAYMENT PROCESSOR......"
+  );
+
+  // Checking out with the whistle in the cart seizes the trunk the store is
+  // dialling out on. Nothing is billed, which was always the point of it.
+  const whistled = Object.prototype.hasOwnProperty.call(cart, "whistle");
+  let toneAt = -1;
+
+  if (whistled) {
+    lines.push("", "   something in the cart is making a noise", "");
+    toneAt = lines.length;
+    lines.push(
+      "   >>>>>  2600 Hz  <<<<<",
+      "",
+      "   FAR END: supervision lost",
+      "   FAR END: trunk marked idle",
+      "   FAR END: billing stopped",
+      "",
+      "   The processor believes you hung up. The line is still",
+      "   open. For the next few seconds it is yours and it will",
+      "   go anywhere you ask it to.",
+      "",
+      "ORDER CANCELLED. NO CHARGE.",
+      "",
+      "Not because there is no store, although there is no store,",
+      "but because nothing on this call is being billed to anybody.",
+      "",
+      "This stopped working in the early eighties. Please do not",
+      "write in about it."
+    );
+  } else {
+    lines.push(
+      "   ERROR: no payment processor configured",
+      "   ERROR: no payment processor has ever been configured",
+      "   ERROR: there is no store",
+      "",
+      "ORDER CANCELLED. NO CHARGE. NO CARD WAS ASKED FOR."
+    );
+  }
+
+  lines.push(
     "",
     "Your cart has been left exactly as you built it,",
     "out of respect for the effort.",
@@ -1263,10 +1298,12 @@ function runCheckout() {
       if (btn) btn.disabled = false;
       return;
     }
+    if (i === toneAt) blow2600(1.5);
     log.textContent += lines[i] + "\n";
     log.scrollTop = log.scrollHeight;
     i++;
-    setTimeout(step, i < 5 ? 240 : 130);
+    // Hold on the tone line so the noise and the text line up.
+    setTimeout(step, i - 1 === toneAt ? 1700 : i < 5 ? 240 : 130);
   };
   step();
 }
@@ -1311,21 +1348,6 @@ function blow2600(seconds) {
   osc.start(t);
   osc.stop(t + dur + 0.02);
   return true;
-}
-
-function initWhistle() {
-  const btn = document.getElementById("whistle-btn");
-  if (!btn) return;
-  const note = document.getElementById("whistle-note");
-  btn.addEventListener("click", () => {
-    const ok = blow2600(1.6);
-    if (!note) return;
-    note.textContent = ok
-      ? "2600 Hz. In 1972 that was a free call to anywhere."
-      : "Your browser declined to make the noise.";
-    btn.disabled = true;
-    setTimeout(() => { btn.disabled = false; }, 1800);
-  });
 }
 
 function initStore() {
@@ -1454,7 +1476,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initPetition();
   initMenus();
   initStore();
-  initWhistle();
   initRedactions();
   initPasswordTerminal();
   runBoot();
