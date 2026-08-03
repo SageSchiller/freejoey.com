@@ -19,6 +19,19 @@ function writeLines(lines, cls) {
   write(open + lines.map(esc).join("\n") + close);
 }
 
+// Same as writeLines, but turns Phrack citations into working links. The
+// pattern is deliberately narrow: it runs over already-escaped text, and
+// these URLs contain nothing esc() rewrites, so nothing can be smuggled in.
+const PHRACK_URL = /https:\/\/phrack\.org\/issues\/\d+\/\d+/g;
+
+function writeCited(lines, cls) {
+  const open = cls ? `<span class="${cls}">` : "";
+  const close = cls ? "</span>" : "";
+  const body = lines.map(esc).join("\n").replace(PHRACK_URL, (u) =>
+    `<a class="ext" href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
+  write(open + body + close);
+}
+
 /* ---------------- fake filesystem ---------------- */
 
 const FILES = {
@@ -114,6 +127,14 @@ const FILES = {
     "Damn kids. They're all alike.",
     "",
     "                          -- with apologies to The Mentor, 1986",
+    "",
+    "The real one is four paragraphs long, was written a week after",
+    "its author was arrested, and has outlived every system it was",
+    "typed on. Read that instead of this.",
+    "",
+    "  https://phrack.org/issues/7/3",
+    "",
+    "There is a newer one. This board should not have it.",
   ],
 };
 
@@ -477,6 +498,22 @@ function garbageFiles() {
       "still nothing. everybody else got one the first week.",
       "kate says you do not pick your handle, it picks you.",
       "kate is not helping.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/PERSONAL/READING.TXT", body: [
+      "phreak's list. he says stop asking about handles and read these.",
+      "",
+      "  PHRACK 7, PHILE 3",
+      "  https://phrack.org/issues/7/3",
+      "  some guy wrote it the week after they arrested him. 1986.",
+      "  phreak has it printed out. it is four paragraphs. he can",
+      "  do the last one from memory and he does, constantly.",
+      "",
+      "i have read it four times. i still do not have a handle.",
+      "",
+      "the part that gets me is that he wrote it AFTER. sitting",
+      "there with nothing left to lose and he still typed it up",
+      "and sent it in. that is the part nobody quotes.",
     ].join("\r\n") },
 
     { name: "GARBAGE/PERSONAL/NOTES.TXT", body: [
@@ -919,7 +956,40 @@ const COMMANDS = {
     if (!arg) { writeLines(["Usage: TYPE <filename>   (try DIR first)"], "warn"); return; }
     const key = arg.toUpperCase();
     if (!FILES[key]) { writeLines([`File not found: ${arg}`], "warn"); return; }
-    writeLines([""].concat(FILES[key]).concat([""]));
+    writeCited([""].concat(FILES[key]).concat([""]));
+  },
+
+  // Not in HELP. PHRACK.TXT says the board should not have the newer one,
+  // which is the whole hook: this entry postdates the board by thirty years
+  // and nobody on it will say who added it.
+  PHRACK() {
+    writeCited([
+      "",
+      "PHRACK MAGAZINE :: pointers kept by this board",
+      "==============================================",
+      "",
+      "  VOL 1, ISSUE 7, PHILE 3                        1986",
+      "  The Conscience of a Hacker",
+      "  https://phrack.org/issues/7/3",
+      "",
+      "    Written by a kid the week after they arrested him.",
+      "    Four paragraphs. It has outlived every system it",
+      "    was ever typed on.",
+      "",
+      "  ISSUE 72, PHILE 19                             2025",
+      "  The Hacker's Renaissance: A Manifesto Reborn",
+      "  https://phrack.org/issues/72/19",
+      "",
+      "    The same argument made again, forty years on, by",
+      "    somebody checking whether any of it survived.",
+      "",
+    ], "amber");
+    writeLines([
+      "SYSOP NOTE: the second entry postdates this board by thirty",
+      "years. It was not here last time anyone looked. The domain is",
+      "paid up through next year and the records do not show by whom.",
+      "",
+    ], "dim");
   },
 
   WHO() {

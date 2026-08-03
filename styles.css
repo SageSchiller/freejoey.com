@@ -302,6 +302,19 @@ body.no-crt #crt { display: none; }
 .terminal .warn { color: #ff5555; }
 .terminal .prompt::before { content: "C:\\FREEJOEY> "; color: #33ff33; opacity: 0.7; }
 
+/* Outbound citations. Inside a terminal they have to stay phosphor; in the
+   case file they sit in the body copy and just want to look like a link. */
+.ext { color: #00007b; }
+.ext:visited { color: #4b0082; }
+.terminal .ext,
+.terminal .ext:visited {
+  color: #ffb000;
+  text-decoration: underline;
+  text-shadow: 0 0 6px rgba(255,176,0,0.6);
+}
+.terminal .ext:hover,
+.terminal .ext:focus { background: #ffb000; color: #000; text-shadow: none; }
+
 .blink { animation: blink 1s steps(1) infinite; }
 
 @keyframes blink { 50% { opacity: 0; } }
