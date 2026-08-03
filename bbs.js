@@ -465,6 +465,302 @@ const JARGON_FILE = {
     "game in the house's favour because it would be dishonest.",
     "Usually passed around set as free verse.",
   ],
+
+  /* the board and the era it is pretending to come from */
+  BBS: [
+    "Bulletin Board System. One computer, one or more phone lines,",
+    "and whoever could get through. You dialled it directly. There",
+    "was no in between and no company standing in the middle.",
+  ],
+  SYSOP: [
+    "System operator. Ran the board, paid for the line, set the",
+    "rules, and deleted your account personally if you were tedious",
+    "about it.",
+  ],
+  DOOR: [
+    "A separate program a board could hand you off to, usually a",
+    "game. You were still connected to the board and the board was",
+    "no longer listening. See GIBSON.EXE.",
+  ],
+  RATIO: [
+    "Upload to download. Take three files, contribute one. Boards",
+    "that enforced it had better libraries and fewer friends.",
+  ],
+  WAREZ: [
+    "Cracked commercial software, traded. Spelled that way on",
+    "purpose. Not carried here, as RULES.TXT says twice.",
+  ],
+  LAMER: [
+    "Somebody who wants the standing without doing any of it. Asks",
+    "for the answer, never the method. The insult of choice on every",
+    "board that ever existed.",
+  ],
+  LEET: [
+    "Elite. Compressed, then respelled, then respelled again until",
+    "the vowels were numbers. Started as a real distinction on real",
+    "boards and ended up as a font.",
+  ],
+  "ANSI ART": [
+    "Pictures drawn in coloured text characters, because that is",
+    "what a terminal could do. Some of it was genuinely beautiful",
+    "and almost all of it is gone.",
+  ],
+  ZMODEM: [
+    "A file transfer protocol, and the good one. It could resume an",
+    "interrupted transfer instead of starting the whole thing again,",
+    "which on a metered line was the difference that mattered.",
+  ],
+  "NO CARRIER": [
+    "The modem lost the far end. Printed by the modem itself, not by",
+    "anything you were talking to, which is why it is the last thing",
+    "in so many transcripts.",
+  ],
+  BAUD: [
+    "Signalling rate on the line. Frequently misused for bits per",
+    "second, including by people who knew better and had stopped",
+    "caring.",
+  ],
+  FIDONET: [
+    "A network of boards that passed mail to each other overnight by",
+    "dialling each other up, one hop at a time. Store and forward,",
+    "run by volunteers, and it worked.",
+  ],
+  NFO: [
+    "An information file, shipped alongside something else, usually",
+    "with more effort spent on the ASCII header than on the",
+    "contents. This board has several.",
+  ],
+  CARDING: [
+    "Using card numbers that are not yours. Distinct from everything",
+    "else on a board like this in that it is straightforwardly",
+    "theft. Not carried here either.",
+  ],
+  WARDIALING: [
+    "Calling every number in a range to find out which ones answer",
+    "with a modem. Slow, extremely noisy, and it worked because",
+    "nobody was listening for it.",
+  ],
+
+  /* phreaking and the adjacent trades */
+  "BLUE BOX": [
+    "A box that generated the phone company's own signalling tones,",
+    "2600 Hz among them, and told the network what to do in its own",
+    "language. See the whistle in the store.",
+  ],
+  "RED BOX": [
+    "Reproduced the sounds a payphone made when you fed it coins, so",
+    "the far end believed it had been paid. Worked on the exact",
+    "machines Phreak was arrested next to.",
+  ],
+  "DUMPSTER DIVING": [
+    "Going through an organisation's rubbish for manuals, printouts,",
+    "phone lists and internal memos. Legal, filthy, and historically",
+    "one of the highest yield techniques there is.",
+  ],
+  "SHOULDER SURFING": [
+    "Reading a password off somebody by standing where you can see",
+    "their hands. No equipment, no skill, and no fix that is not a",
+    "person changing their behaviour.",
+  ],
+  "LOGIC BOMB": [
+    "Code left in a system that waits for a condition and then does",
+    "damage. The condition is often a date, and often the author",
+    "no longer being employed there.",
+  ],
+  ROT13: [
+    "Shift every letter thirteen places. Applying it twice gives you",
+    "back what you started with, which is elegant. It is not",
+    "encryption and was never offered as any, only a way to keep a",
+    "punchline from being read by accident.",
+  ],
+  "RUBBER HOSE": [
+    "Short for rubber-hose cryptanalysis. The observation that the",
+    "cheapest attack on a strong cipher is not mathematical, and is",
+    "applied to the person holding the key rather than the key.",
+  ],
+  SPOOF: [
+    "To pretend convincingly to be some other machine or person. The",
+    "network was built by people who assumed everyone would say who",
+    "they actually were.",
+  ],
+  "SCRIPT KIDDIE": [
+    "Somebody running an attack they could not have written and",
+    "cannot explain. Worth noting that the term arrived after all",
+    "this, so anybody using it about Joey in 1995 was ahead of",
+    "schedule and still wrong.",
+  ],
+
+  /* the many ways a thing can stop working */
+  BUG: [
+    "A defect. Grace Hopper's team taped an actual moth into a log",
+    "book in 1947 and the story is true, but engineers were calling",
+    "faults bugs decades before that, Edison included.",
+  ],
+  FEATURE: [
+    "A property somebody intended. The joke writes itself and has",
+    "been written approximately nine million times.",
+  ],
+  CRASH: [
+    "To stop working suddenly and completely, usually taking",
+    "whatever was not saved with it.",
+  ],
+  HOSED: [
+    "Comprehensively broken. Not failing in one place, failing",
+    "generally.",
+  ],
+  WEDGED: [
+    "Stuck in a state it cannot get out of, still running, doing",
+    "nothing, and not admitting it.",
+  ],
+  HUNG: [
+    "Waiting forever for something that is never going to arrive.",
+    "Distinct from crashed in that it still looks alive.",
+  ],
+  THRASH: [
+    "To spend so much effort moving work around that no work gets",
+    "done. Applies to machines and to organisations equally.",
+  ],
+  GLITCH: [
+    "A brief, transient fault that fixes itself before anybody can",
+    "look at it. Closely related to HEISENBUG.",
+  ],
+  BARF: [
+    "To reject input noisily. A program that barfs is at least",
+    "telling you.",
+  ],
+  GRONK: [
+    "To break something, or to clear it out entirely. Gronked is",
+    "past the point of repair.",
+  ],
+
+  /* judgements of quality, freely given */
+  "BRAIN-DAMAGED": [
+    "So badly designed that the design itself is the problem. The",
+    "strongest available criticism and not used lightly.",
+  ],
+  BOGUS: [
+    "Wrong, fake, or useless. The adjective form of BOGON.",
+  ],
+  ELEGANT: [
+    "The highest praise available. Solves the problem completely",
+    "while appearing to do almost nothing.",
+  ],
+  "SPAGHETTI CODE": [
+    "Control flow so tangled that following it requires a finger on",
+    "the screen. Usually the result of six people being in a hurry",
+    "at different times.",
+  ],
+  "VOODOO PROGRAMMING": [
+    "Including something because it worked once, without knowing",
+    "why, and being unwilling to remove it in case it stops.",
+  ],
+  OBFUSCATED: [
+    "Deliberately made unreadable. There are competitions for it and",
+    "the winners are genuinely impressive.",
+  ],
+  "WORSE IS BETTER": [
+    "The argument that a simple thing that ships and spreads beats a",
+    "correct thing that does not. Advanced in 1989 and the field has",
+    "been arguing about it ever since.",
+  ],
+  BLETCH: [
+    "An expression of disgust at something technical. Bletcherous is",
+    "the adjective and is worse.",
+  ],
+
+  /* mistakes with names */
+  "FENCEPOST ERROR": [
+    "Off by one. A hundred feet of fence with a post every ten feet",
+    "needs eleven posts. Counting the gaps instead of the posts has",
+    "cost more money than most exploits.",
+  ],
+  "PHASE OF THE MOON": [
+    "The last thing left to blame. Occasionally correct: there is a",
+    "documented case where a program's behaviour genuinely depended",
+    "on it, because somebody printed it in a header line and the",
+    "line got too long.",
+  ],
+  "BIG-ENDIAN": [
+    "Which end of a number you store first. The names come from",
+    "Gulliver's Travels, where the same argument is about eggs, and",
+    "the joke was the entire point of choosing them.",
+  ],
+  "SMOKE TEST": [
+    "Switch it on and see whether smoke comes out. Hardware term,",
+    "borrowed by software, still the first test worth running.",
+  ],
+
+  /* the net, and the people on it */
+  SPAM: [
+    "Unwanted bulk messages. Named after the Monty Python sketch in",
+    "which the word drowns out the conversation, which is a precise",
+    "description of the problem.",
+  ],
+  TROLL: [
+    "Somebody posting to provoke rather than to say anything. From",
+    "the fishing sense, dragging bait, not the bridge creature.",
+  ],
+  PLONK: [
+    "The noise of a user landing at the bottom of your killfile.",
+    "Posted as a single word, as a reply, and as the last word.",
+  ],
+  SIG: [
+    "The block at the bottom of your posts. Four lines was the",
+    "convention, everybody broke it, and quoting somebody's entire",
+    "sig back at them was its own minor crime.",
+  ],
+  NETIQUETTE: [
+    "The unwritten rules. Do not shout, do not quote the whole",
+    "message to add one line, read the group before posting to it.",
+    "All still true and all still ignored.",
+  ],
+  "SNAIL MAIL": [
+    "Physical post. Coined by people who had just realised how slow",
+    "it had been all along.",
+  ],
+  MEATSPACE: [
+    "The physical world. Where your body is while you are somewhere",
+    "else.",
+  ],
+  CYBERSPACE: [
+    "Coined by William Gibson, who had barely used a computer at the",
+    "time and got it right anyway. The supercomputer in this case",
+    "file is named after him.",
+  ],
+  VAPORWARE: [
+    "Software announced, promoted, dated, and never shipped.",
+    "Occasionally announced specifically so nobody buys the thing",
+    "that does exist.",
+  ],
+  FUD: [
+    "Fear, Uncertainty and Doubt. Selling against a competitor by",
+    "making buyers nervous rather than by being better.",
+  ],
+  SUIT: [
+    "Somebody in management, particularly one making technical",
+    "decisions on non-technical grounds. Ellingson is full of them",
+    "and one of them signed off on the tanker code.",
+  ],
+
+  /* leftovers worth keeping */
+  "HELLO WORLD": [
+    "The first program. Prints two words and proves the entire",
+    "toolchain works. From Kernighan, and now the first thing",
+    "written in every language ever made.",
+  ],
+  "DEEP MAGIC": [
+    "A technique that depends on knowledge very few people have.",
+    "Distinct from MAGIC in that somebody, somewhere, does actually",
+    "understand it.",
+  ],
+  "MAGIC COOKIE": [
+    "An opaque token handed to you to hand back later. You are not",
+    "meant to look inside it and it means nothing to you if you do.",
+  ],
+  GNU: [
+    "GNU's Not Unix. The acronym contains itself, which is the joke",
+    "and also a working definition of the culture that produced it.",
+  ],
 };
 
 /* ---------------- GARBAGE.ZIP :: built in the browser ---------------- */
