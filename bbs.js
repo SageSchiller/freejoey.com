@@ -41,7 +41,7 @@ const FILES = {
     "NOTE      : Downloaded the garbage file that broke the whole case",
     "            open, then hid the disk while they were carrying his",
     "            monitor down the stairs. It is the only hard evidence",
-    "            anyone has. He is the only one they took in for it.",
+    "            anyone has. He was the first one taken. Not the last.",
   ],
   "RULES.TXT": [
     "1. No flooding.",
@@ -49,6 +49,21 @@ const FILES = {
     "3. Do not ask the sysop what he does for a living.",
     "4. Joey did nothing wrong. This is not up for debate on this board.",
     "5. Rule 4 is, in fact, slightly up for debate. See MANIFESTO.",
+  ],
+  "PHREAK.NFO": [
+    "HANDLE    : Phantom Phreak",
+    "ALSO      : the King of NYNEX, and he could back it up",
+    "NAME      : Ramon Sanchez",
+    "STATUS    : IN CUSTODY. U.S. Secret Service.",
+    "TAKEN     : at a payphone, in a transit station, mid-call",
+    "",
+    "The second one they came for. Arrested inside the network",
+    "he understood better than the people being paid to run it,",
+    "holding a handset, which is about as on the nose as an",
+    "arrest gets.",
+    "",
+    "Joey went first because Joey was youngest and easiest.",
+    "Phreak went next because by then they had a list.",
   ],
   "GIBSON.NFO": [
     "TARGET    : Ellingson Mineral Company",
@@ -117,7 +132,7 @@ const COMMANDS = {
       "  DIR             List files in the message base.",
       "  TYPE <file>     Read a file. Example: TYPE JOEY.NFO",
       "  WHO             Who else is online right now.",
-      "  FINGER JOEY     Look up a user.",
+      "  FINGER <user>   Look up a user. Two of them are worth looking up.",
       "  TRACE           Run a traceroute on the blame.",
       "  SYSOP           Page the system operator.",
       "  DONATE          Contribute to the cause.",
@@ -157,29 +172,34 @@ const COMMANDS = {
       "    3  LordNikon         memorizing your password over your shoulder",
       "    4  AcidBurn          out-typing everyone, as usual",
       "    5  [REDACTED]        definitely not federal law enforcement",
+      "    6  PhantomPhreak     -- no carrier, since the 20th --",
       "",
       " 5 users online. One of them is lying about something.",
+      " Node 6 has been held open. Nobody has asked us to close it.",
       "",
     ]);
   },
 
   FINGER(arg) {
-    if ((arg || "").toUpperCase() !== "JOEY") {
-      writeLines([`No such user: ${arg || "(nobody)"}`], "warn");
+    const who = (arg || "").toUpperCase();
+    if (who === "JOEY") { writeLines([""].concat(FILES["JOEY.NFO"]).concat([""])); return; }
+    if (who === "PHREAK" || who === "PHANTOMPHREAK" || who === "RAMON") {
+      writeLines([""].concat(FILES["PHREAK.NFO"]).concat([""]));
       return;
     }
-    writeLines([""].concat(FILES["JOEY.NFO"]).concat([""]));
+    writeLines([`No such user: ${arg || "(nobody)"}`], "warn");
   },
 
   TRACE() {
-    writeLines(["", "Tracing route to BLAME over a maximum of 6 hops:", ""]);
+    writeLines(["", "Tracing route to BLAME over a maximum of 7 hops:", ""]);
     const hops = [
       "  1   <1 ms   ELLINGSON MINERAL CO.",
       "  2    4 ms   GARBAGE FILE (UNMONITORED)",
       "  3   11 ms   UNKNOWN LOGIN, UNLISTED  ",
       "  4   29 ms   LOCAL BBS SCENE (ENTIRE)",
       "  5   61 ms   JOEY",
-      "  6  timeout  ACTUAL EMBEZZLER",
+      "  6   74 ms   PHANTOM PHREAK",
+      "  7  timeout  ACTUAL EMBEZZLER",
     ];
     let i = 0;
     const step = () => {
@@ -294,6 +314,8 @@ const COMMANDS = {
 
   GIBSON() { COMMANDS.TYPE("GIBSON.NFO"); },
 
+  PHREAK() { COMMANDS.TYPE("PHREAK.NFO"); },
+
   GILL() {
     COMMANDS.TYPE("GILL.NFO");
     writeLines([
@@ -332,7 +354,7 @@ const COMMANDS = {
       "was watching, holding the only proof that the people",
       "watching were the ones stealing.",
       "",
-      "One kid opened it. One kid went away for it.",
+      "One kid opened it. Two of them went away for it.",
       "",
     ], "amber");
   },
@@ -549,6 +571,8 @@ COMMANDS.MAN = COMMANDS.HELP;
 COMMANDS.ZEROCOOL = COMMANDS.GIBSON;
 COMMANDS.CRASH = COMMANDS.GIBSON;
 COMMANDS.HACKTHEPLANET = function () { COMMANDS.HACK("PLANET"); };
+COMMANDS.RAMON = COMMANDS.PHREAK;
+COMMANDS.NYNEX = COMMANDS.PHREAK;
 
 function runCommand(raw) {
   const line = raw.trim();
