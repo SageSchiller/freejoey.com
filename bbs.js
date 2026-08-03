@@ -200,23 +200,76 @@ function makeZip(files) {
 function zipPick(a) { return a[Math.floor(Math.random() * a.length)]; }
 function zipAmount() { return "$" + (Math.random() * 0.9 + 0.01).toFixed(2); }
 
+// Offset, hex, and an ASCII column, the way every hex editor of the period
+// laid it out. Printable bytes show through on the right, which is the whole
+// reason a fragment like this is worth carrying out of a building.
+function hexDump(bytes) {
+  const rows = [];
+  for (let i = 0; i < bytes.length; i += 16) {
+    const slice = bytes.slice(i, i + 16);
+    let hex = "", asc = "";
+    for (let b = 0; b < 16; b++) {
+      if (b < slice.length) {
+        hex += slice[b].toString(16).padStart(2, "0") + " ";
+        asc += slice[b] >= 32 && slice[b] < 127 ? String.fromCharCode(slice[b]) : ".";
+      } else { hex += "   "; asc += " "; }
+      if (b === 7) hex += " ";
+    }
+    rows.push(i.toString(16).padStart(8, "0") + "  " + hex + " |" + asc + "|");
+  }
+  return rows;
+}
+
+// Mostly noise, with a handful of strings left intact. Nobody strips their
+// symbol table when they are in a hurry.
+function wormBytes(strings, len) {
+  const b = new Uint8Array(len);
+  for (let i = 0; i < len; i++) b[i] = Math.floor(Math.random() * 256);
+  let at = 24;
+  strings.forEach((s) => {
+    if (at + s.length + 4 >= len) return;
+    for (let i = 0; i < s.length; i++) b[at + i] = s.charCodeAt(i);
+    b[at + s.length] = 0;
+    at += s.length + 4 + Math.floor(Math.random() * 40);
+  });
+  return b;
+}
+
 function garbageFiles() {
   const acct = "884" + Math.floor(Math.random() * 900000 + 100000);
 
+  // Sorted, because a ledger that is not in date order is not a ledger.
   const transfers = [];
   for (let i = 0; i < 60; i++) {
-    const d = String(Math.floor(Math.random() * 28) + 1).padStart(2, "0");
-    transfers.push("09/" + d + "/95  " + String(Math.floor(Math.random() * 24)).padStart(2, "0") +
-      ":" + String(Math.floor(Math.random() * 60)).padStart(2, "0") +
-      "  ROUNDING ADJ  " + zipAmount().padStart(7) + "  ->  ACCT " + acct);
+    transfers.push({
+      d: Math.floor(Math.random() * 28) + 1,
+      h: Math.floor(Math.random() * 24),
+      m: Math.floor(Math.random() * 60),
+      amt: zipAmount(),
+    });
   }
+  transfers.sort((a, b) => a.d - b.d || a.h - b.h || a.m - b.m);
+  const ledger = transfers.map((t) =>
+    "09/" + String(t.d).padStart(2, "0") + "/95  " +
+    String(t.h).padStart(2, "0") + ":" + String(t.m).padStart(2, "0") +
+    "  ROUNDING ADJ  " + t.amt.padStart(7) + "  ->  ACCT " + acct);
 
-  const dump = [];
-  for (let i = 0; i < 24; i++) {
-    let row = String(i * 16).padStart(8, "0") + "  ";
-    for (let b = 0; b < 16; b++) row += Math.floor(Math.random() * 256).toString(16).padStart(2, "0") + " ";
-    dump.push(row);
-  }
+  const dump = hexDump(wormBytes([
+    "MEMDUMP", "no symbols", "??", "free(): invalid pointer",
+  ], 384));
+
+  const worm = hexDump(wormBytes([
+    "da Vinci",
+    "ELLINGSON MINERAL CO",
+    "BALLAST.CTL",
+    "ebelford",
+    "ROUNDING ADJ",
+    "ACCT " + acct,
+    "SUPPRESS LOG",
+    "run quiet",
+    "delete self",
+    "LEONARDO",
+  ], 512));
 
   return [
     { name: "GARBAGE/README.1ST", body: [
@@ -239,7 +292,7 @@ function garbageFiles() {
     { name: "GARBAGE/ELLINGSON/PAYROLL/TRANSFERS.LOG", body: [
       "ELLINGSON MINERAL CO -- ADJUSTMENT LEDGER -- DO NOT DISTRIBUTE",
       "",
-    ].concat(transfers).concat([
+    ].concat(ledger).concat([
       "",
       "60 adjustments this page. Same destination account on every line.",
       "Nobody has queried it. Nobody is paid to query it.",
@@ -372,6 +425,20 @@ function garbageFiles() {
       "NOTE      : works nights. keeps the whole thing running.",
       "NOTE      : has never once been thanked in writing.",
     ].join("\r\n") },
+
+    { name: "GARBAGE/DAVINCI.FRG", body: [
+      "; three fragments, concatenated in the order they came off the",
+      "; machine. this is the file. this is the whole reason any of it",
+      "; happened. it is 512 bytes and it is not even the whole worm.",
+      ";",
+      "; you cannot read it. nobody who took it could read it either.",
+      "; look at the right hand column anyway.",
+      "",
+    ].concat(worm).concat([
+      "",
+      "; ends mid instruction. the rest was in a directory you did not",
+      "; reach, on a machine you are no longer on.",
+    ]).join("\r\n") },
 
     { name: "GARBAGE/CORE.DUMP", body: dump.join("\r\n") },
 
