@@ -117,6 +117,307 @@ const FILES = {
   ],
 };
 
+/* ---------------- GIBSON.EXE :: door game ---------------- */
+// A 1995-style BBS door: line commands, turn based, no redraw. Everything
+// in it comes off the screen. You are doing what Joey did, on the machine
+// he did it on, with Belford's department watching the line.
+
+let GAME = null;
+
+// Belford names these on screen. script.js declares its own copy for the
+// evidence page terminal, and bbs.html loads both files, so this one needs
+// a distinct name or the duplicate const kills this entire script.
+const GIBSON_PW = ["love", "sex", "secret", "god"];
+
+// Flag is how hard security watches the directory. Trace climbs faster the
+// closer you get to anything worth having.
+const GIBSON_MAP = {
+  "/":        { flag: 0, kids: ["pub", "usr", "payroll", "tanker", "sec", "garbage"] },
+  "/pub":     { flag: 0, kids: [] },
+  "/usr":     { flag: 1, kids: [] },
+  "/payroll": { flag: 2, kids: [] },
+  "/tanker":  { flag: 2, kids: [] },
+  "/sec":     { flag: 3, kids: [], locked: true },
+  "/garbage": { flag: 1, kids: [] },
+};
+
+const GIBSON_JUNK = {
+  "/pub":     ["readme.txt", "holiday.msg", "cafeteria.doc"],
+  "/usr":     ["hal.profile", "margo.profile", "belford.profile"],
+  "/payroll": ["q3.xls", "bonus.xls", "transfers.log"],
+  "/tanker":  ["fleet.dat", "ballast.ctl", "davinci.tmp"],
+  "/sec":     ["incident.log", "trace.cfg", "gill.contact"],
+  "/garbage": ["core.dump", "old.bak", "temp.000"],
+};
+
+const GIBSON_READS = {
+  "readme.txt":    "Welcome to the Gibson. Please do not touch anything.",
+  "holiday.msg":   "The company picnic is cancelled again. Third year running.",
+  "cafeteria.doc": "Tuesday is meatloaf. It has been Tuesday for some time.",
+  "hal.profile":   "Sysadmin. Works nights. Has never once been thanked.",
+  "margo.profile": "Executive. Access level well above her job description.",
+  "belford.profile": "Head of security. Rollerblades indoors. Nobody stops him.",
+  "q3.xls":        "Numbers. They add up. That is the surprising part.",
+  "bonus.xls":     "One name receives a bonus every month. Same name.",
+  "transfers.log": "Small amounts. Constant. Rounding, if rounding had a plan.",
+  "fleet.dat":     "Tanker positions. Ballast schedules. Nothing you should have.",
+  "ballast.ctl":   "Control routine. Somebody has been editing this by hand.",
+  "davinci.tmp":   "Half a program. The half that tips ships over.",
+  "incident.log":  "Your session is in here. It has been in here for a while.",
+  "trace.cfg":     "The thing counting down at the top of your screen.",
+  "gill.contact":  "A phone number for the Secret Service, dialled in advance.",
+  "core.dump":     "Somebody crashed something and never came back for it.",
+  "old.bak":       "A backup of a file that no longer exists.",
+  "temp.000":      "Empty. Aggressively empty.",
+};
+
+function gibsonBar(t) {
+  const filled = Math.max(0, Math.min(10, Math.round(t / 10)));
+  return "[" + "#".repeat(filled) + ".".repeat(10 - filled) + "]";
+}
+
+function gibsonStatus() {
+  const g = GAME;
+  const cls = g.trace >= 70 ? "warn" : g.trace >= 40 ? "amber" : "dim";
+  write('<span class="' + cls + '">TRACE ' + gibsonBar(g.trace) + " " +
+    String(g.trace).padStart(3) + "%   FRAGMENTS " + g.got.length + "/3   " +
+    esc(g.cwd) + "</span>");
+}
+
+function gibsonStart() {
+  const dirs = ["/pub", "/usr", "/payroll", "/tanker", "/sec", "/garbage"];
+  // Three fragments, scattered. One is always behind the locked door, so a
+  // clean run needs the password from the case file.
+  const pool = dirs.slice().sort(() => Math.random() - 0.5);
+  const spots = [ "/sec" ];
+  for (const d of pool) { if (spots.length < 3 && d !== "/sec") spots.push(d); }
+
+  GAME = { active: true, cwd: "/", trace: 12, turns: 0, got: [], frags: spots, unlocked: false };
+
+  writeLines([
+    "",
+    "ATDT 555-0143",
+    "CONNECT 28800",
+    "",
+  ], "dim");
+  writeLines([
+    "ELLINGSON MINERAL COMPANY // GIBSON",
+    "Unauthorized access is prohibited and monitored.",
+    "",
+    "You are in. Somewhere on this machine are three pieces of the",
+    "garbage file. Belford's department is already counting.",
+    "",
+    "LS            list this directory",
+    "CD <dir>      move. CD .. goes back up",
+    "GET <file>    take a copy",
+    "HIDE          stall the trace. costs you a turn",
+    "LOGOFF        leave. do this before the trace lands",
+    "",
+  ], "amber");
+  gibsonStatus();
+}
+
+function gibsonEnd(won, why) {
+  GAME.active = false;
+  writeLines([""], "dim");
+  if (won) {
+    writeLines([
+      "NO CARRIER",
+      "",
+      "  *** YOU GOT OUT ***",
+      "",
+      "Three fragments on a disk in your hand. You cannot read any",
+      "of it and you have no idea what you are holding.",
+      "",
+      "Neither did he. He held on to it anyway, and it turned out to",
+      "be the only thing standing between Ellingson and getting away",
+      "with all of it.",
+      "",
+      "Turns taken: " + GAME.turns + ".  Trace at exit: " + GAME.trace + "%.",
+      "",
+    ], "amber");
+  } else {
+    writeLines([
+      "TRACE COMPLETE.",
+      "",
+      "  *** THEY HAVE YOUR ADDRESS ***",
+      "",
+      why,
+      "",
+      "It is four in the morning. There is somebody at the door and",
+      "your mother is answering it. They will take the floppies, the",
+      "machine, and then you.",
+      "",
+      "Type RUN GIBSON.EXE to try again. He did not get a second go.",
+      "",
+    ], "warn");
+  }
+}
+
+function gibsonTick(cost) {
+  const g = GAME;
+  g.turns++;
+  const node = GIBSON_MAP[g.cwd] || { flag: 0 };
+  g.trace += (cost === undefined ? 1 : cost) + node.flag * 2;
+
+  // Belford is on the machine too. Occasionally he notices.
+  if (Math.random() < 0.13 && g.trace < 92) {
+    const ev = Math.floor(Math.random() * 4);
+    if (ev === 0) {
+      writeLines(["", "Somebody else just logged in. The line got slower.", ""], "warn");
+      g.trace += 6;
+    } else if (ev === 1) {
+      writeLines(["", "A window opens on its own:", "  GIMME COOKIE", ""], "amber");
+      g.cookie = true;
+    } else if (ev === 2) {
+      writeLines(["", "The night sysadmin walks past the console and does not look.", ""], "dim");
+    } else {
+      writeLines(["", "Rollerblade wheels, somewhere above you, going the other way.", ""], "dim");
+    }
+  }
+
+  if (g.trace >= 100) {
+    g.trace = 100;
+    gibsonEnd(false, "You stayed on the line too long. That is the whole of it.");
+    return false;
+  }
+  return true;
+}
+
+function gibsonCommand(cmd, arg) {
+  const g = GAME;
+  const a = (arg || "").trim();
+
+  if (g.cookie && cmd !== "COOKIE") {
+    writeLines(["The window is still there. It still wants a cookie."], "amber");
+  }
+
+  switch (cmd) {
+    case "COOKIE":
+      if (g.cookie) {
+        g.cookie = false;
+        writeLines(["", "The window closes, satisfied.", "Whoever wrote that is not your problem tonight.", ""], "amber");
+      } else {
+        writeLines(["Nothing is asking you for one."], "dim");
+      }
+      return;
+
+    case "LS": case "DIR": {
+      const node = GIBSON_MAP[g.cwd];
+      writeLines([""], "dim");
+      if (g.cwd === "/") {
+        node.kids.forEach((k) => write(esc("  /" + k + (GIBSON_MAP["/" + k].locked && !g.unlocked ? "   [locked]" : ""))));
+      } else {
+        (GIBSON_JUNK[g.cwd] || []).forEach((f) => write(esc("  " + f)));
+        if (g.frags.indexOf(g.cwd) > -1 && g.got.indexOf(g.cwd) < 0) {
+          write('<span class="amber">  garbage.' + esc(g.cwd.slice(1)) + "   &lt;-- fragment</span>");
+        }
+        write(esc("  .."));
+      }
+      writeLines([""], "dim");
+      if (gibsonTick(1)) gibsonStatus();
+      return;
+    }
+
+    case "CD": {
+      if (!a) { writeLines(["Usage: CD <dir>"], "warn"); return; }
+      if (a === "..") {
+        if (g.cwd === "/") { writeLines(["Already at root."], "dim"); return; }
+        g.cwd = "/";
+        writeLines(["Now at /"], "dim");
+        if (gibsonTick(1)) gibsonStatus();
+        return;
+      }
+      const target = "/" + a.replace(/^\//, "").toLowerCase();
+      if (!GIBSON_MAP[target] || target === "/") { writeLines(["No such directory: " + a], "warn"); return; }
+      if (GIBSON_MAP[target].locked && !g.unlocked) {
+        writeLines([
+          "",
+          "  " + target + " is protected.",
+          "  PASSWORD:  (their head of security has opinions about these)",
+          "",
+          "  Type: UNLOCK <password>",
+          "",
+        ], "warn");
+        return;
+      }
+      g.cwd = target;
+      writeLines(["Now at " + target + (GIBSON_MAP[target].flag >= 2 ? "   ACCESS FLAGGED" : "")],
+        GIBSON_MAP[target].flag >= 2 ? "warn" : "dim");
+      if (gibsonTick(1)) gibsonStatus();
+      return;
+    }
+
+    case "UNLOCK": {
+      if (GIBSON_PW.indexOf(a.toLowerCase()) > -1) {
+        g.unlocked = true;
+        writeLines(["", "ACCESS GRANTED.", "One of four. He said it out loud to a room and nobody changed it.", ""], "amber");
+      } else {
+        writeLines(["Rejected. Think less like a hacker and more like an executive."], "warn");
+        if (gibsonTick(2)) gibsonStatus();
+      }
+      return;
+    }
+
+    case "GET": {
+      if (!a) { writeLines(["Usage: GET <file>"], "warn"); return; }
+      const want = a.toLowerCase();
+      const isFrag = want.indexOf("garbage") === 0;
+      if (isFrag && g.frags.indexOf(g.cwd) > -1 && g.got.indexOf(g.cwd) < 0) {
+        g.got.push(g.cwd);
+        writeLines(["", "Copied. Fragment " + g.got.length + " of 3.", ""], "amber");
+        if (g.got.length === 3) {
+          writeLines(["You have all three. Now get off the line."], "amber");
+        }
+        if (gibsonTick(2)) gibsonStatus();
+        return;
+      }
+      if (GIBSON_READS[want]) {
+        writeLines(["", "  " + GIBSON_READS[want], ""], "dim");
+        if (gibsonTick(1)) gibsonStatus();
+        return;
+      }
+      writeLines(["No such file here: " + a], "warn");
+      return;
+    }
+
+    case "HIDE":
+      g.trace = Math.max(0, g.trace - 14);
+      writeLines(["", "You sit still and let the line go quiet.", ""], "dim");
+      if (gibsonTick(3)) gibsonStatus();
+      return;
+
+    case "LOGOFF": case "EXIT": case "BYE": case "QUIT":
+      if (g.got.length === 3) { gibsonEnd(true); return; }
+      GAME.active = false;
+      writeLines([
+        "",
+        "NO CARRIER",
+        "",
+        "You got out with " + g.got.length + " of 3. Nothing you took proves",
+        "anything on its own, which is the same as taking nothing.",
+        "",
+      ], "dim");
+      return;
+
+    case "HELP": case "?":
+      writeLines([
+        "",
+        "  LS / DIR      list this directory",
+        "  CD <dir>      move. CD .. goes back up",
+        "  GET <file>    take a copy. Fragments are marked.",
+        "  UNLOCK <pw>   for the locked directory",
+        "  HIDE          stall the trace, costs a turn",
+        "  LOGOFF        leave",
+        "",
+      ], "dim");
+      return;
+
+    default:
+      writeLines(["Not while you are on their machine. Type HELP."], "warn");
+  }
+}
+
 /* ---------------- commands ---------------- */
 
 const HISTORY = [];
@@ -140,6 +441,8 @@ const COMMANDS = {
       "  BANNER          Redraw the welcome screen.",
       "  CLS             Clear the screen.",
       "  EXIT            Hang up.",
+      "",
+      "  RUN GIBSON.EXE  Dial into Ellingson. One node, one shot.",
       "",
       "There are a few commands not on this list. There always are.",
       "",
@@ -313,6 +616,12 @@ const COMMANDS = {
   },
 
   GIBSON() { COMMANDS.TYPE("GIBSON.NFO"); },
+
+  RUN(arg) {
+    const what = (arg || "").toUpperCase().replace(/\.EXE$/, "");
+    if (what === "GIBSON") { gibsonStart(); return; }
+    writeLines(["Usage: RUN GIBSON.EXE"], "warn");
+  },
 
   PHREAK() { COMMANDS.TYPE("PHREAK.NFO"); },
 
@@ -580,6 +889,10 @@ function runCommand(raw) {
   const parts = line.split(/\s+/);
   const cmd = parts[0].toUpperCase();
   const arg = parts.slice(1).join(" ");
+
+  // While the door game is running it owns every command, so LS and CD
+  // mean the Gibson's filesystem rather than this board's.
+  if (GAME && GAME.active) { gibsonCommand(cmd, arg); return; }
 
   // "FREE JOEY" and "HACK THE PLANET" read better as whole phrases.
   if (COMMANDS[cmd]) { COMMANDS[cmd](arg); return; }
