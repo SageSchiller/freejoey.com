@@ -117,6 +117,331 @@ const FILES = {
   ],
 };
 
+/* ---------------- GARBAGE.ZIP :: built in the browser ---------------- */
+// A real zip, assembled by hand. Entries are STORED, so no compression
+// library is needed: just CRC32 and the header layout. Everything inside is
+// plain text, nothing executable, and it is generated locally at the moment
+// you ask for it.
+
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+
+function crc32(bytes) {
+  let c = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+}
+
+// 15 September 1995, 02:14, in DOS date and time fields.
+const DOS_DATE = ((1995 - 1980) << 9) | (9 << 5) | 15;
+const DOS_TIME = (2 << 11) | (14 << 5) | 0;
+
+function makeZip(files) {
+  const enc = new TextEncoder();
+  const out = [];
+  const dir = [];
+  let offset = 0;
+
+  const u16 = (a, v) => { a.push(v & 0xff, (v >>> 8) & 0xff); };
+  const u32 = (a, v) => { a.push(v & 0xff, (v >>> 8) & 0xff, (v >>> 16) & 0xff, (v >>> 24) & 0xff); };
+
+  files.forEach((f) => {
+    const name = enc.encode(f.name);
+    const data = enc.encode(f.body);
+    const crc = crc32(data);
+
+    const local = [];
+    u32(local, 0x04034b50);
+    u16(local, 20); u16(local, 0); u16(local, 0);      // version, flags, stored
+    u16(local, DOS_TIME); u16(local, DOS_DATE);
+    u32(local, crc); u32(local, data.length); u32(local, data.length);
+    u16(local, name.length); u16(local, 0);
+    local.push.apply(local, Array.from(name));
+    local.push.apply(local, Array.from(data));
+    out.push(new Uint8Array(local));
+
+    const cen = [];
+    u32(cen, 0x02014b50);
+    u16(cen, 20); u16(cen, 20); u16(cen, 0); u16(cen, 0);
+    u16(cen, DOS_TIME); u16(cen, DOS_DATE);
+    u32(cen, crc); u32(cen, data.length); u32(cen, data.length);
+    u16(cen, name.length); u16(cen, 0); u16(cen, 0);
+    u16(cen, 0); u16(cen, 0); u32(cen, 0);
+    u32(cen, offset);
+    cen.push.apply(cen, Array.from(name));
+    dir.push(new Uint8Array(cen));
+
+    offset += local.length;
+  });
+
+  const cdSize = dir.reduce((n, d) => n + d.length, 0);
+  const end = [];
+  u32(end, 0x06054b50);
+  u16(end, 0); u16(end, 0);
+  u16(end, files.length); u16(end, files.length);
+  u32(end, cdSize); u32(end, offset);
+  u16(end, 0);
+
+  const parts = out.concat(dir, [new Uint8Array(end)]);
+  const total = parts.reduce((n, p) => n + p.length, 0);
+  const blob = new Uint8Array(total);
+  let at = 0;
+  parts.forEach((p) => { blob.set(p, at); at += p.length; });
+  return new Blob([blob], { type: "application/zip" });
+}
+
+function zipPick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function zipAmount() { return "$" + (Math.random() * 0.9 + 0.01).toFixed(2); }
+
+function garbageFiles() {
+  const acct = "884" + Math.floor(Math.random() * 900000 + 100000);
+
+  const transfers = [];
+  for (let i = 0; i < 60; i++) {
+    const d = String(Math.floor(Math.random() * 28) + 1).padStart(2, "0");
+    transfers.push("09/" + d + "/95  " + String(Math.floor(Math.random() * 24)).padStart(2, "0") +
+      ":" + String(Math.floor(Math.random() * 60)).padStart(2, "0") +
+      "  ROUNDING ADJ  " + zipAmount().padStart(7) + "  ->  ACCT " + acct);
+  }
+
+  const dump = [];
+  for (let i = 0; i < 24; i++) {
+    let row = String(i * 16).padStart(8, "0") + "  ";
+    for (let b = 0; b < 16; b++) row += Math.floor(Math.random() * 256).toString(16).padStart(2, "0") + " ";
+    dump.push(row);
+  }
+
+  return [
+    { name: "GARBAGE/README.1ST", body: [
+      "GARBAGE FILE",
+      "============",
+      "",
+      "This is what a kid pulled off the Gibson in September 1995,",
+      "reconstructed from three fragments and a great deal of nerve.",
+      "",
+      "He could not read any of it. Neither could the people who took",
+      "his computer. The difference is that he kept it anyway.",
+      "",
+      "Everything in this archive is plain text and completely made up.",
+      "It is a joke about a film. Nothing in here is real, including the",
+      "account number, which we generated at random about a second ago.",
+      "",
+      "-- freejoey.com",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/PAYROLL/TRANSFERS.LOG", body: [
+      "ELLINGSON MINERAL CO -- ADJUSTMENT LEDGER -- DO NOT DISTRIBUTE",
+      "",
+    ].concat(transfers).concat([
+      "",
+      "60 adjustments this page. Same destination account on every line.",
+      "Nobody has queried it. Nobody is paid to query it.",
+    ]).join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/PAYROLL/BONUS.XLS", body: [
+      "MONTH     RECIPIENT           AMOUNT      APPROVED BY",
+      "-------------------------------------------------------",
+      "JAN 95    E. BELFORD          [REDACTED]  E. BELFORD",
+      "FEB 95    E. BELFORD          [REDACTED]  E. BELFORD",
+      "MAR 95    E. BELFORD          [REDACTED]  E. BELFORD",
+      "APR 95    E. BELFORD          [REDACTED]  E. BELFORD",
+      "MAY 95    E. BELFORD          [REDACTED]  E. BELFORD",
+      "JUN 95    E. BELFORD          [REDACTED]  E. BELFORD",
+      "JUL 95    E. BELFORD          [REDACTED]  E. BELFORD",
+      "AUG 95    E. BELFORD          [REDACTED]  E. BELFORD",
+      "",
+      "Column four is the part worth reading twice.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/TANKER/BALLAST.CTL", body: [
+      "; ballast control -- fleet wide",
+      "; edited by hand. repeatedly. by someone in a hurry.",
+      "",
+      "ON TRIGGER:",
+      "  FOR EACH VESSEL IN FLEET:",
+      "    SET BALLAST PORT   = 100",
+      "    SET BALLAST STARBD = 0",
+      "    SUPPRESS ALARM",
+      "    SUPPRESS LOG",
+      "",
+      "; a ship with all its water on one side does not stay a ship.",
+      "; whoever wrote this knew that. that is the entire point of it.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/TANKER/FLEET.DAT", body: [
+      "VESSEL          LAT        LON        STATUS",
+      "-------------------------------------------------",
+      "ELLINGSON I     41.2N      71.4W      AT SEA",
+      "ELLINGSON II    38.9N      74.1W      AT SEA",
+      "ELLINGSON IV    36.0N      75.8W      AT SEA",
+      "ELLINGSON V     33.7N      78.2W      AT SEA",
+      "",
+      "There is no ELLINGSON III. Nobody at the company will say why.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/TANKER/DAVINCI.TMP", body: [
+      "; fragment. the rest was somewhere you did not reach.",
+      "",
+      "PROC DAVINCI:",
+      "  WAIT UNTIL PRESS IS BUSY",
+      "  CALL BALLAST.CTL",
+      "  RUN QUIET",
+      "  DELETE SELF",
+      "",
+      "; a spill on the news buys months in which nobody audits anything.",
+      "; the spill was never the plan. the months were the plan.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/SEC/INCIDENT.LOG", body: [
+      "SEC INCIDENT LOG -- NODE 7",
+      "",
+      "02:11  unfamiliar login. no employee match.",
+      "02:12  subject browsing. slowly. does not appear to know the layout.",
+      "02:14  subject copied a file out of the garbage directory.",
+      "02:14  file flagged. escalated to department head.",
+      "02:15  department head already awake. did not ask which file.",
+      "02:19  external call placed. number was on file in advance.",
+      "",
+      "NOTE: subject was on the system for eight minutes and took one",
+      "thing. Department head requested the maximum available response.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/PAYROLL/Q3.XLS", body: [
+      "ELLINGSON MINERAL CO -- Q3 SUMMARY",
+      "",
+      "  GROSS                         [figure withheld]",
+      "  ADJUSTMENTS                   [figure withheld]",
+      "  NET                           [figure withheld]",
+      "",
+      "  VARIANCE, UNEXPLAINED         0.00",
+      "",
+      "Variance is zero because the adjustments column is where the",
+      "variance went. See TRANSFERS.LOG, which nobody has.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/SEC/GILL.CONTACT", body: [
+      "AGENT     : GILL, RICHARD",
+      "AGENCY    : United States Secret Service",
+      "PRIORITY  : call first, ask later",
+      "",
+      "NOTE: this entry predates the intrusion by some weeks.",
+      "Somebody in this department knew who to call before there was",
+      "anything to call about.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/SEC/TRACE.CFG", body: [
+      "TRACE ENABLED       = YES",
+      "TRACE THRESHOLD     = 0",
+      "NOTIFY              = BELFORD",
+      "NOTIFY SECOND       = GILL, R. (USSS)",
+      "RETAIN SESSION LOGS = FOREVER",
+      "",
+      "Threshold zero means everything is an incident.",
+      "Convenient, if what you need is an incident.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/USR/BELFORD.PROFILE", body: [
+      "USER      : ebelford",
+      "TITLE     : Head of Computer Security",
+      "ACCESS    : all",
+      "PASSWORD  : one of four. he says so out loud. to rooms.",
+      "NOTE      : rollerblades indoors. nobody stops him.",
+      "NOTE      : reported the intrusion within minutes of it happening,",
+      "            which is fast for a man who was not looking for one.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/USR/MARGO.PROFILE", body: [
+      "USER      : mwallace",
+      "TITLE     : Executive",
+      "ACCESS    : considerably more than the title requires",
+      "NOTE      : signs off on things she has not read, at hours",
+      "            when nobody is awake to ask her about them.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/ELLINGSON/USR/HAL.PROFILE", body: [
+      "USER      : hal",
+      "TITLE     : Systems Administrator",
+      "ACCESS    : whatever is needed, whenever it breaks",
+      "NOTE      : works nights. keeps the whole thing running.",
+      "NOTE      : has never once been thanked in writing.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/CORE.DUMP", body: dump.join("\r\n") },
+
+    { name: "GARBAGE/TEMP.000", body: "" },
+
+    { name: "GARBAGE/OLD.BAK", body: [
+      "This is a backup of a file that no longer exists.",
+      "It has been kept for six years by a process nobody maintains.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/PERSONAL/LUCY.CFG", body: [
+      "; LUCY",
+      "; do not let mom move this off the desk again",
+      "",
+      "NAME     = LUCY",
+      "OWNER    = joey",
+      "SPEED    = as fast as it goes, which is not that fast",
+      "BACKUP   = there is one floppy. it is not in this room.",
+      "",
+      "; if you are reading this it means they took her.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/PERSONAL/HANDLE.TXT", body: [
+      "handles, working list, do NOT show anyone",
+      "===========================================",
+      "",
+      "  Nitro            - taken",
+      "  Overkill         - taken",
+      "  Zer0 Tolerance   - too close to Zero Cool, he would kill me",
+      "  Blade Runner     - taken twice",
+      "  Phantom Menace   - phreak said no",
+      "  Dark Avenger     - real one, actual guy, do not",
+      "  Byte Me          - phreak laughed. not the good laugh.",
+      "  Joey             - ???",
+      "",
+      "still nothing. everybody else got one the first week.",
+      "kate says you do not pick your handle, it picks you.",
+      "kate is not helping.",
+    ].join("\r\n") },
+
+    { name: "GARBAGE/PERSONAL/NOTES.TXT", body: [
+      zipPick([
+        "the pool on the roof must have a leak",
+        "ask phreak about the payphone at the station",
+        "cereal has been in that dumpster for two hours",
+      ]),
+      "",
+      "the file is in the usual place. not the desk. the OTHER place.",
+      "if anything happens, it is in the other place.",
+    ].join("\r\n") },
+  ];
+}
+
+let GARBAGE_UNLOCKED = false;
+try { GARBAGE_UNLOCKED = localStorage.getItem("fj_garbage") === "1"; } catch (e) {}
+
+function downloadGarbage() {
+  const files = garbageFiles();
+  const blob = makeZip(files);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "GARBAGE.ZIP";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  return { bytes: blob.size, count: files.length };
+}
+
 /* ---------------- GIBSON.EXE :: door game ---------------- */
 // A 1995-style BBS door: line commands, turn based, no redraw. Everything
 // in it comes off the screen. You are doing what Joey did, on the machine
@@ -235,7 +560,13 @@ function gibsonEnd(won, why) {
       "",
       "Turns taken: " + GAME.turns + ".  Trace at exit: " + GAME.trace + "%.",
       "",
+      "The board has queued GARBAGE.ZIP for you.",
+      "Type DOWNLOAD when you are ready to receive it.",
+      "",
     ], "amber");
+    // Survives a reload. You only have to get out once.
+    GARBAGE_UNLOCKED = true;
+    try { localStorage.setItem("fj_garbage", "1"); } catch (e) {}
   } else {
     writeLines([
       "TRACE COMPLETE.",
@@ -444,9 +775,57 @@ const COMMANDS = {
       "",
       "  RUN GIBSON.EXE  Dial into Ellingson. One node, one shot.",
       "",
+    ]);
+    if (GARBAGE_UNLOCKED) {
+      writeLines([
+        "  DOWNLOAD        Receive GARBAGE.ZIP. You earned it.",
+        "",
+      ], "amber");
+    }
+    writeLines([
       "There are a few commands not on this list. There always are.",
       "",
     ]);
+  },
+
+  DOWNLOAD() {
+    if (!GARBAGE_UNLOCKED) {
+      writeLines([
+        "",
+        "No file queued for this account.",
+        "The board does not hand out things you did not go and get.",
+        "",
+      ], "warn");
+      return;
+    }
+
+    // Everything below is synchronous so the click stays inside the
+    // keypress that asked for it. Browsers get suspicious otherwise.
+    let res;
+    try {
+      res = downloadGarbage();
+    } catch (e) {
+      writeLines(["", "TRANSFER FAILED. The line dropped.", ""], "warn");
+      return;
+    }
+
+    writeLines([
+      "",
+      "Ready to receive GARBAGE.ZIP.  Starting ZMODEM...",
+      "",
+      "  [" + "\u2588".repeat(40) + "]  100%",
+      "",
+      "  Received:  GARBAGE.ZIP   " + res.bytes + " bytes (" + (res.bytes / 1024).toFixed(1) + "K)",
+      "  Files:     " + res.count,
+      "  Errors:    0",
+      "  Time:      unclear. it is always about 2:14 in here.",
+      "",
+      "Transfer complete.",
+      "",
+      "It is somebody else's mess and you cannot read most of it.",
+      "Neither could he. Keep it anyway.",
+      "",
+    ], "amber");
   },
 
   DIR() {
